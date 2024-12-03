@@ -37,7 +37,7 @@ const createChatElement = (content, className) => {
 }
 
 const getChatResponse = async (incomingChatDiv) => {
-    const API_URL = "http://54.207.160.252:8080/"+conversation_id;
+    const API_URL = "https://54.207.160.252/"+conversation_id;
     const pElement = document.createElement("p");
 
     const requestOptions = {
