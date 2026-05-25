@@ -15,6 +15,7 @@ const sketch = (p) => {
   const dispersionNoiseScale = 0.015;
   const maxDistanceConnect = 150;
   const maxConnectionStrengh = 7;
+  const maxMouseConnectionStrength = 25;
   const maxForce = 1.00;
   let flowField = [];
   let flowFieldStrengths = [];
@@ -95,7 +96,7 @@ const sketch = (p) => {
     }
 
     reset() {
-      this.size = p.random(2, 10);
+      this.size = p.random(3, 11);
       this.depth = p.map(this.size, 2, 10, 0.35, 1, true);
       this.maxSpeed = p.map(this.size, 2, 10, minParticleSpeed, maxParticleSpeed, true);
       this.position = p.createVector(p.random(p.width), p.random(p.height));
@@ -179,7 +180,7 @@ const sketch = (p) => {
       this.acceleration.add(dispersion);
     }
 
-    connectToPoint(targetX, targetY) {
+    connectToPoint(targetX, targetY, maxStrength = maxConnectionStrengh) {
       const distance = p.dist(
         this.position.x,
         this.position.y,
@@ -192,7 +193,7 @@ const sketch = (p) => {
           distance,
           0,
           maxDistanceConnect,
-          maxConnectionStrengh,
+          maxStrength,
           0,
           true
         );
@@ -272,12 +273,12 @@ const sketch = (p) => {
 
     const orderedParticles = [...particles].sort((left, right) => left.size - right.size);
 
-    for (let index = 0; index < particles.length-1; index += 1) {
-      for (let jindex = 0; jindex < particles.length; jindex += 1) {
+    for (let index = 0; index < particles.length; index += 1) {
+      for (let jindex = 0; jindex < particles.length-1; jindex += 1) {
         particles[index].connect(particles[jindex])
       }
 
-      particles[index].connectToPoint(p.mouseX, p.mouseY);
+      particles[index].connectToPoint(p.mouseX, p.mouseY, maxMouseConnectionStrength);
     }
 
     if (shouldDrawFlowField) {
