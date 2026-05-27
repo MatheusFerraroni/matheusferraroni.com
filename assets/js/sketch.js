@@ -16,7 +16,7 @@ const sketch = (p) => {
   const dispersionStrength = 0.0300;
   const dispersionNoiseScale = 0.015;
   const maxDistanceConnect = 150;
-  const maxConnectionStrengh = 7;
+  const maxConnectionStrengh = 12;
   const maxMouseConnectionStrength = 25;
   const maxConnections = 5;
   const maxForce = 1.00;
