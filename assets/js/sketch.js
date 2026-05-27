@@ -1,7 +1,9 @@
 const sketch = (p) => {
   const particles = [];
   const palette = ["#7dd3fc", "#38bdf8", "#f59e0b", "#f8fafc"];
-  const particleCount = 300;
+  const initialParticleCount = 300;
+  const minParticleCount = 60;
+  const maxParticleCount = 300;
   const particleLifetime = 40000;
   const fadeDuration = 2000;
   const minParticleSpeed = 0.11;
@@ -16,13 +18,111 @@ const sketch = (p) => {
   const maxDistanceConnect = 150;
   const maxConnectionStrengh = 7;
   const maxMouseConnectionStrength = 25;
+  const maxConnections = 5;
   const maxForce = 1.00;
+  const targetFPS = 59;
+  const fpsWindowMs = 10000;
+  const fpsAdjustmentIntervalMs = 1000;
+  const fpsRecoveryThreshold = 59.25;
+  const particleRecoveryStep = 12;
   let flowField = [];
   let flowFieldStrengths = [];
   let cols = 0;
   let rows = 0;
   let zOffset = 0;
   let shouldDrawFlowField = false;
+  let targetParticleCount = initialParticleCount;
+  let lastParticleAdjustmentAt = 0;
+  const frameSamples = [];
+  let frameTimeTotal = 0;
+
+  function getActiveParticleCount() {
+    let activeParticleCount = 0;
+
+    for (let index = 0; index < particles.length; index += 1) {
+      if (!particles[index].isRetiring) {
+        activeParticleCount += 1;
+      }
+    }
+
+    return activeParticleCount;
+  }
+
+  function syncParticlePopulation() {
+    while (getActiveParticleCount() < targetParticleCount) {
+      particles.push(new Particle());
+    }
+
+    let retiringParticlesNeeded = getActiveParticleCount() - targetParticleCount;
+
+    if (retiringParticlesNeeded <= 0) {
+      return;
+    }
+
+    for (let index = particles.length - 1; index >= 0; index -= 1) {
+      const particle = particles[index];
+
+      if (particle.isRetiring) {
+        continue;
+      }
+
+      particle.retire();
+      retiringParticlesNeeded -= 1;
+
+      if (retiringParticlesNeeded <= 0) {
+        break;
+      }
+    }
+  }
+
+  function recordFrameSample() {
+    const now = p.millis();
+    const frameDuration = p.deltaTime;
+
+    frameSamples.push({ now, frameDuration });
+    frameTimeTotal += frameDuration;
+
+    while (frameSamples.length > 0 && now - frameSamples[0].now > fpsWindowMs) {
+      frameTimeTotal -= frameSamples[0].frameDuration;
+      frameSamples.shift();
+    }
+  }
+
+  function getAverageFPS() {
+    if (frameTimeTotal <= 0) {
+      return targetFPS;
+    }
+
+    return frameSamples.length / (frameTimeTotal / 1000);
+  }
+
+  function updateTargetParticleCount() {
+    const now = p.millis();
+
+    if (now - lastParticleAdjustmentAt < fpsAdjustmentIntervalMs) {
+      return;
+    }
+
+    lastParticleAdjustmentAt = now;
+
+    const averageFPS = getAverageFPS();
+
+    if (averageFPS < targetFPS) {
+      const scaledTarget = Math.floor(targetParticleCount * (averageFPS / targetFPS) * 0.96);
+      targetParticleCount = p.constrain(scaledTarget, minParticleCount, maxParticleCount);
+      syncParticlePopulation();
+      return;
+    }
+
+    if (averageFPS >= fpsRecoveryThreshold && targetParticleCount < maxParticleCount) {
+      targetParticleCount = p.constrain(
+        targetParticleCount + particleRecoveryStep,
+        minParticleCount,
+        maxParticleCount
+      );
+      syncParticlePopulation();
+    }
+  }
 
   function updateFlowField() {
     flowField = new Array(cols * rows);
@@ -106,6 +206,21 @@ const sketch = (p) => {
       this.color = p.color(p.random(palette));
       this.birthTime = p.millis();
       this.lifeDuration = p.random(particleLifetime * 0.5, particleLifetime);
+      this.isRetiring = false;
+      this.shouldRemove = false;
+      this.connections = 0;
+    }
+
+    retire() {
+      if (this.isRetiring) {
+        return;
+      }
+
+      const now = p.millis();
+      const age = now - this.birthTime;
+
+      this.isRetiring = true;
+      this.lifeDuration = Math.max(age + fadeDuration, fadeDuration);
     }
 
     getLifeProgress() {
@@ -205,6 +320,8 @@ const sketch = (p) => {
           targetX,
           targetY
         )
+
+        this.connections = this.connections+1;
       }
     }
 
@@ -214,6 +331,11 @@ const sketch = (p) => {
 
     move() {
       if (this.getLifeProgress() >= 1) {
+        if (this.isRetiring) {
+          this.shouldRemove = true;
+          return;
+        }
+
         this.reset();
         return;
       }
@@ -257,12 +379,12 @@ const sketch = (p) => {
       });
     }
 
-    for (let index = 0; index < particleCount; index += 1) {
-      particles.push(new Particle());
-    }
+    syncParticlePopulation();
   };
 
   p.draw = () => {
+    recordFrameSample();
+    updateTargetParticleCount();
     p.clear();
     updateFlowField();
 
@@ -271,10 +393,20 @@ const sketch = (p) => {
       particles[index].move();
     }
 
+    for (let index = particles.length - 1; index >= 0; index -= 1) {
+      if (particles[index].shouldRemove) {
+        particles.splice(index, 1);
+      }
+    }
+
     const orderedParticles = [...particles].sort((left, right) => left.size - right.size);
 
     for (let index = 0; index < particles.length; index += 1) {
-      for (let jindex = 0; jindex < particles.length-1; jindex += 1) {
+      particles[index].connections = 0;
+      for (let jindex = index; jindex < particles.length-1; jindex += 1) {
+        if(particles[index].connections>=maxConnections){
+          break
+        }
         particles[index].connect(particles[jindex])
       }
 
