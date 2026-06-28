@@ -1,9 +1,11 @@
 const sketch = (p) => {
   const particles = [];
   const palette = ["#7dd3fc", "#38bdf8", "#f59e0b", "#f8fafc"];
-  const initialParticleCount = 300;
+  const referenceWidth = 2560;
+  const referenceHeight = 1440;
+  const referenceParticles = 200;
+  const defaultPixelRatio = 96;
   const minParticleCount = 60;
-  const maxParticleCount = 300;
   const particleLifetime = 40000;
   const fadeDuration = 2000;
   const minParticleSpeed = 0.11;
@@ -17,15 +19,36 @@ const sketch = (p) => {
   const dispersionNoiseScale = 0.015;
   const maxDistanceConnect = 150;
   const maxConnectionStrengh = 12;
-  const maxMouseConnectionStrength = 25;
+  const maxMouseConnectionStrength = 14;
+  const maxMouseConnections = 5;
+  const maxMouseCurveConnections = 6;
   const maxConnections = 5;
   const maxCurveConnections = 2;
+  const neighborRadius = maxDistanceConnect;
+  const neighborRadiusSquared = neighborRadius * neighborRadius;
+  const neighborCellSize = neighborRadius;
+  const neighborRecalcInterval = 1;
+  const connectionFadeIn = 0.22;
+  const connectionFadeOut = 0.10;
+  const curveConnectionStrengthMultiplier = 1.35;
+  const mouseCurveConnectionStrengthMultiplier = 1.0;
+  const curveConnectionFadeOut = 0.06;
+  const minVisibleConnectionStrength = 0.15;
+  const mouseCurveBend = 0.22;
   const maxForce = 1.00;
-  const targetFPS = 59;
-  const fpsWindowMs = 10000;
+  const targetFPS = 58;
+  const fpsWindowMs = 2000;
   const fpsAdjustmentIntervalMs = 1000;
   const fpsRecoveryThreshold = 59.25;
   const particleRecoveryStep = 12;
+  const perfQuery = new URLSearchParams(window.location.search);
+  const shouldProfileFrame = perfQuery.get("perf") === "1";
+  const requestedProfileParticleCount = Number(perfQuery.get("particles"));
+  const shouldLogParticleCounts = perfQuery.get("particleLogs") === "1";
+  const profileSampleSize = 120;
+  let maxParticleCount = referenceParticles;
+  let initialParticleCount = Math.floor(maxParticleCount / 2);
+  let profileParticleCount = initialParticleCount;
   let flowField = [];
   let flowFieldStrengths = [];
   let cols = 0;
@@ -35,7 +58,219 @@ const sketch = (p) => {
   let targetParticleCount = initialParticleCount;
   let lastParticleAdjustmentAt = 0;
   const frameSamples = [];
+  const profileSamples = [];
+  const profileAverages = {};
+  const profileCounters = {
+    directConnections: 0,
+    curveConnections: 0,
+    mouseConnections: 0,
+    nearLinks: 0,
+    nearComparisons: 0,
+    neighborCells: 0,
+    neighborRecalculated: false,
+  };
+  let spatialGrid = new Map();
+  let nearbyParticlesByIndex = [];
+  const directConnectionStates = new Map();
+  const curveConnectionStates = new Map();
+  const mouseDirectConnectionStates = new Map();
+  const mouseCurveConnectionStates = new Map();
   let frameTimeTotal = 0;
+
+  function now() {
+    return performance.now();
+  }
+
+  function squaredDistanceBetweenPoints(startX, startY, endX, endY) {
+    const dx = startX - endX;
+    const dy = startY - endY;
+    return dx * dx + dy * dy;
+  }
+
+  function measureFrameStep(frameProfile, label, callback) {
+    const startedAt = now();
+    const result = callback();
+    frameProfile[label] = (frameProfile[label] || 0) + now() - startedAt;
+    return result;
+  }
+
+  function shouldShowProfileOverlay() {
+    return shouldProfileFrame || shouldDrawFlowField;
+  }
+
+  function getParticlePixelRatio() {
+    const browserPixelRatio = Number(window.devicePixelRatio) || 1;
+    return browserPixelRatio * defaultPixelRatio;
+  }
+
+  function getResponsiveCurrentArea() {
+    const pixelRatioScale = getParticlePixelRatio() / defaultPixelRatio;
+    return p.width * p.height * pixelRatioScale * pixelRatioScale;
+  }
+
+  function getResponsiveMaxParticleCount() {
+    const referenceArea = referenceWidth * referenceHeight;
+    const currentArea = getResponsiveCurrentArea();
+
+    return Math.max(
+      minParticleCount,
+      Math.round((currentArea / referenceArea) * referenceParticles)
+    );
+  }
+
+  function logParticleCountState(label) {
+    if (!shouldLogParticleCounts) {
+      return;
+    }
+
+    const referenceArea = referenceWidth * referenceHeight;
+    const cssArea = p.width * p.height;
+    const particlePixelRatio = getParticlePixelRatio();
+    const pixelRatioScale = particlePixelRatio / defaultPixelRatio;
+    const currentArea = getResponsiveCurrentArea();
+    const areaRatio = referenceArea > 0 ? currentArea / referenceArea : 0;
+
+    console.log("[particles]", label, {
+      canvasWidth: p.width,
+      canvasHeight: p.height,
+      windowWidth: p.windowWidth,
+      windowHeight: p.windowHeight,
+      devicePixelRatio: window.devicePixelRatio,
+      defaultPixelRatio,
+      particlePixelRatio,
+      pixelRatioScale,
+      referenceWidth,
+      referenceHeight,
+      referenceArea,
+      cssArea,
+      currentArea,
+      areaRatio,
+      referenceParticles,
+      minParticleCount,
+      maxParticleCount,
+      initialParticleCount,
+      profileParticleCount,
+      targetParticleCount,
+      activeParticleCount: getActiveParticleCount(),
+      shouldProfileFrame,
+      requestedProfileParticleCount,
+    });
+  }
+
+  function updateParticleCountLimits() {
+    maxParticleCount = getResponsiveMaxParticleCount();
+    initialParticleCount = Math.floor(maxParticleCount / 2);
+
+    if (!shouldProfileFrame) {
+      targetParticleCount = p.constrain(
+        targetParticleCount,
+        minParticleCount,
+        maxParticleCount
+      );
+    }
+
+    logParticleCountState("updateParticleCountLimits");
+  }
+
+  function updateProfileParticleCount() {
+    const hasRequestedProfileCount =
+      Number.isFinite(requestedProfileParticleCount) &&
+      requestedProfileParticleCount > 0;
+
+    profileParticleCount = p.constrain(
+      hasRequestedProfileCount ? requestedProfileParticleCount : initialParticleCount,
+      minParticleCount,
+      maxParticleCount
+    );
+
+    logParticleCountState("updateProfileParticleCount");
+  }
+
+  function recordProfileSample(frameProfile) {
+    if (!shouldShowProfileOverlay()) {
+      return;
+    }
+
+    profileSamples.push(frameProfile);
+
+    if (profileSamples.length > profileSampleSize) {
+      profileSamples.shift();
+    }
+
+    const labels = Object.keys(frameProfile);
+
+    for (let index = 0; index < labels.length; index += 1) {
+      const label = labels[index];
+      let total = 0;
+
+      for (let sampleIndex = 0; sampleIndex < profileSamples.length; sampleIndex += 1) {
+        total += profileSamples[sampleIndex][label] || 0;
+      }
+
+      profileAverages[label] = total / profileSamples.length;
+    }
+
+    const particlePerformance = {
+      averages: { ...profileAverages },
+      counters: { ...profileCounters },
+      particles: particles.length,
+      targetParticleCount,
+      initialParticleCount,
+      maxParticleCount,
+      profileParticleCount,
+    };
+
+    window.__particlePerformance = particlePerformance;
+    document.documentElement.dataset.particlePerformance = JSON.stringify(particlePerformance);
+  }
+
+  function drawProfileOverlay() {
+    if (!shouldShowProfileOverlay()) {
+      return;
+    }
+
+    const rows = [
+      ["total", profileAverages.totalFrame],
+      ["flow", profileAverages.updateFlowField],
+      ["move", profileAverages.moveParticles],
+      ["cleanup", profileAverages.removeParticles],
+      ["sort", profileAverages.sortParticles],
+      ["near", profileAverages.calculateNearParticles],
+      ["index", profileAverages.getParticleIndexes],
+      ["direct", profileAverages.drawDirectConnections],
+      ["curves", profileAverages.drawCurveConnections],
+      ["mouse", profileAverages.drawMouseConnections],
+      ["particles", profileAverages.drawParticles],
+    ];
+    const averageFPS = getAverageFPS();
+    const currentFPS = p.deltaTime > 0 ? 1000 / p.deltaTime : 0;
+
+    p.push();
+    p.noStroke();
+    p.fill(2, 6, 23, 220);
+    p.rect(16, 16, 260, 434, 6);
+    p.fill(226, 232, 240);
+    p.textSize(12);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(`perf ${particles.length}/${targetParticleCount} particles`, 28, 28);
+    p.text(`limits min ${minParticleCount} init ${initialParticleCount} max ${maxParticleCount}`, 28, 48);
+    p.text(`fps avg ${averageFPS.toFixed(1)} now ${currentFPS.toFixed(1)}`, 28, 68);
+    p.text(`near links ${profileCounters.nearLinks}`, 28, 88);
+    p.text(`near checks ${profileCounters.nearComparisons}`, 28, 108);
+    p.text(`grid cells ${profileCounters.neighborCells}`, 28, 128);
+    p.text(`recalc ${profileCounters.neighborRecalculated ? "yes" : "no"}`, 28, 148);
+    p.text(`direct ${profileCounters.directConnections}`, 28, 168);
+    p.text(`curves ${profileCounters.curveConnections}`, 28, 188);
+    p.text(`mouse ${profileCounters.mouseConnections}`, 28, 208);
+
+    for (let index = 0; index < rows.length; index += 1) {
+      const [label, value] = rows[index];
+      const textValue = value === undefined ? "--" : `${value.toFixed(2)}ms`;
+      p.text(`${label}: ${textValue}`, 28, 236 + index * 16);
+    }
+
+    p.pop();
+  }
 
   function getActiveParticleCount() {
     let activeParticleCount = 0;
@@ -98,6 +333,13 @@ const sketch = (p) => {
   }
 
   function updateTargetParticleCount() {
+    if (shouldProfileFrame) {
+      targetParticleCount = profileParticleCount;
+      syncParticlePopulation();
+      logParticleCountState("updateTargetParticleCount:profile");
+      return;
+    }
+
     const now = p.millis();
 
     if (now - lastParticleAdjustmentAt < fpsAdjustmentIntervalMs) {
@@ -112,6 +354,7 @@ const sketch = (p) => {
       const scaledTarget = Math.floor(targetParticleCount * (averageFPS / targetFPS) * 0.96);
       targetParticleCount = p.constrain(scaledTarget, minParticleCount, maxParticleCount);
       syncParticlePopulation();
+      logParticleCountState("updateTargetParticleCount:decrease");
       return;
     }
 
@@ -122,6 +365,7 @@ const sketch = (p) => {
         maxParticleCount
       );
       syncParticlePopulation();
+      logParticleCountState("updateTargetParticleCount:recover");
     }
   }
 
@@ -196,7 +440,7 @@ const sketch = (p) => {
       this.reset(true);
     }
 
-    reset() {
+    reset(isInitialReset = false) {
       this.size = p.random(3, 11);
       this.depth = p.map(this.size, 2, 10, 0.35, 1, true);
       this.maxSpeed = p.map(this.size, 2, 10, minParticleSpeed, maxParticleSpeed, true);
@@ -211,6 +455,8 @@ const sketch = (p) => {
       this.shouldRemove = false;
       this.connections = 0;
       this.nearParticles = [];
+      this.skipConnectionsUntilNeighborRecalc = !isInitialReset;
+      this.connectionInvalidatedAt = isInitialReset ? -1 : p.frameCount;
     }
 
     retire() {
@@ -298,6 +544,13 @@ const sketch = (p) => {
     }
 
     connectToPoint(targetX, targetY, maxStrength = maxConnectionStrengh) {
+      if (
+        this.skipConnectionsUntilNeighborRecalc ||
+        wasConnectionInvalidatedThisFrame(this)
+      ) {
+        return false;
+      }
+
       const startX = this.position.x;
       const startY = this.position.y;
       const endX = targetX;
@@ -317,22 +570,57 @@ const sketch = (p) => {
         );
 
         p.stroke(255, 255, 255, connectionStrength);
-        p.line(
-          startX,
-          startY,
-          endX,
-          endY
-        );
+        p.line(startX, startY, endX, endY);
 
         this.connections = this.connections+1;
+        return true;
       }
+
+      return false;
     }
 
     connect(other){
-      this.connectToPoint(other.position.x, other.position.y);
+      return this.connectToPoint(other.position.x, other.position.y);
     }
 
-    connectToParticleThroughParticle(targetParticle, middleParticle) {
+    connectToNearbyParticle(nearbyParticle, connectionKey, activeConnectionKeys) {
+      const targetParticle = nearbyParticle.particle;
+
+      if (
+        this.skipConnectionsUntilNeighborRecalc ||
+        targetParticle.skipConnectionsUntilNeighborRecalc ||
+        wasConnectionInvalidatedThisFrame(this) ||
+        wasConnectionInvalidatedThisFrame(targetParticle) ||
+        this.connections >= maxConnections ||
+        targetParticle.connections >= maxConnections
+      ) {
+        return false;
+      }
+
+      const distance = Math.sqrt(nearbyParticle.distanceSquared);
+      const connectionStrength = p.map(
+        distance,
+        0,
+        maxDistanceConnect,
+        maxConnectionStrengh,
+        0,
+        true
+      );
+
+      drawSmoothedDirectConnection(
+        connectionKey,
+        this,
+        targetParticle,
+        connectionStrength,
+        activeConnectionKeys
+      );
+
+      this.connections = this.connections + 1;
+      targetParticle.connections = targetParticle.connections + 1;
+      return true;
+    }
+
+    connectToParticleThroughParticle(targetParticle, middleParticle, connectionKey, activeConnectionKeys) {
       const startX = this.position.x;
       const startY = this.position.y;
       const middleX = middleParticle.position.x;
@@ -340,13 +628,13 @@ const sketch = (p) => {
       const endX = targetParticle.position.x;
       const endY = targetParticle.position.y;
       const totalDistance =
-        p.dist(startX, startY, middleX, middleY) +
-        p.dist(middleX, middleY, endX, endY);
+        Math.sqrt(squaredDistanceBetweenPoints(startX, startY, middleX, middleY)) +
+        Math.sqrt(squaredDistanceBetweenPoints(middleX, middleY, endX, endY));
       const connectionStrength = p.map(
         totalDistance,
         0,
         maxDistanceConnect * 2,
-        maxConnectionStrengh,
+        maxConnectionStrengh * curveConnectionStrengthMultiplier,
         0,
         true
       );
@@ -358,40 +646,18 @@ const sketch = (p) => {
       const controlX = straightX + (middleX - straightX) * curveAttraction;
       const controlY = straightY + (middleY - straightY) * curveAttraction;
 
-      p.noFill();
-      p.stroke(255, 255, 255, connectionStrength);
-      p.beginShape();
-      p.vertex(startX, startY);
-      p.quadraticVertex(controlX, controlY, endX, endY);
-      p.endShape();
-    }
-
-    calculateNearParticles(allParticles) {
-      const nearParticleCandidates = [];
-
-      for (let index = 0; index < allParticles.length; index += 1) {
-        const particle = allParticles[index];
-
-        if (particle === this) {
-          continue;
-        }
-
-        const distance = p.dist(
-          this.position.x,
-          this.position.y,
-          particle.position.x,
-          particle.position.y
-        );
-
-        if (distance > 0 && distance < maxDistanceConnect) {
-          nearParticleCandidates.push({ particle, distance });
-        }
-      }
-
-      nearParticleCandidates.sort((left, right) => left.distance - right.distance);
-      this.nearParticles = nearParticleCandidates
-        .slice(0, maxConnections)
-        .map((candidate) => candidate.particle);
+      drawSmoothedCurveConnection(
+        connectionKey,
+        this,
+        middleParticle,
+        targetParticle,
+        {
+          controlX,
+          controlY,
+          targetStrength: connectionStrength,
+        },
+        activeConnectionKeys
+      );
     }
 
     move() {
@@ -412,14 +678,22 @@ const sketch = (p) => {
 
       if (this.position.x < -this.size) {
         this.position.x = p.width + this.size;
+        this.skipConnectionsUntilNeighborRecalc = true;
+        this.connectionInvalidatedAt = p.frameCount;
       } else if (this.position.x > p.width + this.size) {
         this.position.x = -this.size;
+        this.skipConnectionsUntilNeighborRecalc = true;
+        this.connectionInvalidatedAt = p.frameCount;
       }
 
       if (this.position.y < -this.size) {
         this.position.y = p.height + this.size;
+        this.skipConnectionsUntilNeighborRecalc = true;
+        this.connectionInvalidatedAt = p.frameCount;
       } else if (this.position.y > p.height + this.size) {
         this.position.y = -this.size;
+        this.skipConnectionsUntilNeighborRecalc = true;
+        this.connectionInvalidatedAt = p.frameCount;
       }
     }
 
@@ -430,10 +704,441 @@ const sketch = (p) => {
     }
   }
 
+  function getParticleX(particle) {
+    return particle.position.x;
+  }
+
+  function getParticleY(particle) {
+    return particle.position.y;
+  }
+
+  function getCellCoord(value) {
+    return Math.floor(value / neighborCellSize);
+  }
+
+  function makeCellKey(cellX, cellY) {
+    return `${cellX},${cellY}`;
+  }
+
+  function buildSpatialGrid() {
+    const grid = new Map();
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const particle = particles[index];
+      const cellX = getCellCoord(getParticleX(particle));
+      const cellY = getCellCoord(getParticleY(particle));
+      const cellKey = makeCellKey(cellX, cellY);
+      let cell = grid.get(cellKey);
+
+      if (!cell) {
+        cell = [];
+        grid.set(cellKey, cell);
+      }
+
+      cell.push(index);
+    }
+
+    return grid;
+  }
+
+  function findNearbyParticlesForIndex(index, grid) {
+    const particle = particles[index];
+    const baseCellX = getCellCoord(getParticleX(particle));
+    const baseCellY = getCellCoord(getParticleY(particle));
+    const nearbyParticles = [];
+    let comparisons = 0;
+
+    for (let cellOffsetX = -1; cellOffsetX <= 1; cellOffsetX += 1) {
+      for (let cellOffsetY = -1; cellOffsetY <= 1; cellOffsetY += 1) {
+        const cellKey = makeCellKey(baseCellX + cellOffsetX, baseCellY + cellOffsetY);
+        const cell = grid.get(cellKey);
+
+        if (!cell) {
+          continue;
+        }
+
+        for (let cellIndex = 0; cellIndex < cell.length; cellIndex += 1) {
+          const otherIndex = cell[cellIndex];
+
+          if (otherIndex === index) {
+            continue;
+          }
+
+          const otherParticle = particles[otherIndex];
+          const dx = getParticleX(particle) - getParticleX(otherParticle);
+          const dy = getParticleY(particle) - getParticleY(otherParticle);
+          const distanceSquared = dx * dx + dy * dy;
+
+          comparisons += 1;
+
+          if (distanceSquared <= neighborRadiusSquared) {
+            nearbyParticles.push({
+              index: otherIndex,
+              particle: otherParticle,
+              distanceSquared,
+            });
+          }
+        }
+      }
+    }
+
+    return {
+      comparisons,
+      nearbyParticles,
+    };
+  }
+
+  function recalculateNearbyParticles() {
+    let nearLinks = 0;
+    let nearComparisons = 0;
+
+    spatialGrid = buildSpatialGrid();
+    nearbyParticlesByIndex = new Array(particles.length);
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const result = findNearbyParticlesForIndex(index, spatialGrid);
+      result.nearbyParticles.sort((left, right) => left.distanceSquared - right.distanceSquared);
+      nearbyParticlesByIndex[index] = result.nearbyParticles;
+      particles[index].nearParticles = result.nearbyParticles.map((item) => item.particle);
+      particles[index].connections = 0;
+      particles[index].skipConnectionsUntilNeighborRecalc = false;
+      nearLinks += result.nearbyParticles.length;
+      nearComparisons += result.comparisons;
+    }
+
+    profileCounters.nearLinks = nearLinks;
+    profileCounters.nearComparisons = nearComparisons;
+    profileCounters.neighborCells = spatialGrid.size;
+    profileCounters.neighborRecalculated = true;
+  }
+
+  function updateNearbyParticlesIfNeeded() {
+    profileCounters.neighborRecalculated = false;
+
+    if (
+      p.frameCount % neighborRecalcInterval === 0 ||
+      nearbyParticlesByIndex.length !== particles.length
+    ) {
+      recalculateNearbyParticles();
+    }
+  }
+
   function getConnectionKey(leftIndex, rightIndex) {
     return leftIndex < rightIndex
       ? `${leftIndex}:${rightIndex}`
       : `${rightIndex}:${leftIndex}`;
+  }
+
+  function wasConnectionInvalidatedThisFrame(particle) {
+    return particle.connectionInvalidatedAt === p.frameCount;
+  }
+
+  function shouldDropSmoothedConnection(state) {
+    return (
+      state.left.skipConnectionsUntilNeighborRecalc ||
+      state.right.skipConnectionsUntilNeighborRecalc ||
+      (state.middle && state.middle.skipConnectionsUntilNeighborRecalc) ||
+      wasConnectionInvalidatedThisFrame(state.left) ||
+      wasConnectionInvalidatedThisFrame(state.right) ||
+      (state.middle && wasConnectionInvalidatedThisFrame(state.middle))
+    );
+  }
+
+  function drawDirectConnectionLine(leftParticle, rightParticle, strength) {
+    p.stroke(255, 255, 255, strength);
+    p.line(
+      leftParticle.position.x,
+      leftParticle.position.y,
+      rightParticle.position.x,
+      rightParticle.position.y
+    );
+  }
+
+  function drawCurveConnectionLine(leftParticle, middleParticle, rightParticle, controlX, controlY, strength) {
+    p.noFill();
+    p.stroke(255, 255, 255, strength);
+    p.beginShape();
+    p.vertex(leftParticle.position.x, leftParticle.position.y);
+    p.quadraticVertex(controlX, controlY, rightParticle.position.x, rightParticle.position.y);
+    p.endShape();
+  }
+
+  function drawMouseCurveConnectionLine(state) {
+    p.noFill();
+    p.stroke(255, 255, 255, state.strength);
+    p.beginShape();
+    p.vertex(state.startX, state.startY);
+    p.quadraticVertex(state.controlX, state.controlY, state.endX, state.endY);
+    p.endShape();
+  }
+
+  function drawMouseDirectConnectionLine(state) {
+    p.stroke(255, 255, 255, state.strength);
+    p.line(
+      state.startX,
+      state.startY,
+      state.target.position.x,
+      state.target.position.y
+    );
+  }
+
+  function drawSmoothedMouseDirectConnection(key, targetParticle, targetStrength, activeConnectionKeys) {
+    activeConnectionKeys.add(key);
+
+    const state = mouseDirectConnectionStates.get(key) || {
+      target: targetParticle,
+      startX: p.mouseX,
+      startY: p.mouseY,
+      strength: 0,
+    };
+
+    state.target = targetParticle;
+    state.startX = p.mouseX;
+    state.startY = p.mouseY;
+    state.strength = p.lerp(state.strength, targetStrength, connectionFadeIn);
+    mouseDirectConnectionStates.set(key, state);
+
+    if (state.strength > minVisibleConnectionStrength) {
+      drawMouseDirectConnectionLine(state);
+    }
+  }
+
+  function fadeInactiveMouseDirectConnections(activeConnectionKeys) {
+    for (const [key, state] of mouseDirectConnectionStates) {
+      if (activeConnectionKeys.has(key)) {
+        continue;
+      }
+
+      if (
+        state.target.skipConnectionsUntilNeighborRecalc ||
+        wasConnectionInvalidatedThisFrame(state.target)
+      ) {
+        mouseDirectConnectionStates.delete(key);
+        continue;
+      }
+
+      state.strength = p.lerp(state.strength, 0, connectionFadeOut);
+
+      if (state.strength <= minVisibleConnectionStrength) {
+        mouseDirectConnectionStates.delete(key);
+        continue;
+      }
+
+      drawMouseDirectConnectionLine(state);
+    }
+  }
+
+  function drawMouseCurveConnection(targetParticle, middleParticle, connectionKey, activeConnectionKeys) {
+    if (
+      targetParticle.skipConnectionsUntilNeighborRecalc ||
+      middleParticle.skipConnectionsUntilNeighborRecalc ||
+      wasConnectionInvalidatedThisFrame(targetParticle) ||
+      wasConnectionInvalidatedThisFrame(middleParticle)
+    ) {
+      return false;
+    }
+
+    const startX = p.mouseX;
+    const startY = p.mouseY;
+    const middleX = middleParticle.position.x;
+    const middleY = middleParticle.position.y;
+    const endX = targetParticle.position.x;
+    const endY = targetParticle.position.y;
+    const totalDistance =
+      Math.sqrt(squaredDistanceBetweenPoints(startX, startY, middleX, middleY)) +
+      Math.sqrt(squaredDistanceBetweenPoints(middleX, middleY, endX, endY));
+
+    if (totalDistance <= 0 || totalDistance > maxDistanceConnect * 2) {
+      return false;
+    }
+
+    const connectionStrength = p.map(
+      totalDistance,
+      0,
+      maxDistanceConnect * 2,
+      maxMouseConnectionStrength * mouseCurveConnectionStrengthMultiplier,
+      0,
+      true
+    );
+    const straightX = startX + (endX - startX) * 0.5;
+    const straightY = startY + (endY - startY) * 0.5;
+    const controlX = straightX + (middleX - straightX) * mouseCurveBend;
+    const controlY = straightY + (middleY - straightY) * mouseCurveBend;
+
+    drawSmoothedMouseCurveConnection(
+      connectionKey,
+      middleParticle,
+      targetParticle,
+      {
+        startX,
+        startY,
+        endX,
+        endY,
+        controlX,
+        controlY,
+        targetStrength: connectionStrength,
+      },
+      activeConnectionKeys
+    );
+
+    return true;
+  }
+
+  function shouldDropMouseCurveConnection(state) {
+    return (
+      state.middle.skipConnectionsUntilNeighborRecalc ||
+      state.target.skipConnectionsUntilNeighborRecalc ||
+      wasConnectionInvalidatedThisFrame(state.middle) ||
+      wasConnectionInvalidatedThisFrame(state.target)
+    );
+  }
+
+  function drawSmoothedDirectConnection(key, leftParticle, rightParticle, targetStrength, activeConnectionKeys) {
+    activeConnectionKeys.add(key);
+
+    const state = directConnectionStates.get(key) || {
+      left: leftParticle,
+      right: rightParticle,
+      strength: 0,
+    };
+
+    state.left = leftParticle;
+    state.right = rightParticle;
+    state.strength = p.lerp(state.strength, targetStrength, connectionFadeIn);
+    directConnectionStates.set(key, state);
+
+    if (state.strength > minVisibleConnectionStrength) {
+      drawDirectConnectionLine(leftParticle, rightParticle, state.strength);
+    }
+  }
+
+  function fadeInactiveDirectConnections(activeConnectionKeys) {
+    for (const [key, state] of directConnectionStates) {
+      if (activeConnectionKeys.has(key)) {
+        continue;
+      }
+
+      if (shouldDropSmoothedConnection(state)) {
+        directConnectionStates.delete(key);
+        continue;
+      }
+
+      state.strength = p.lerp(state.strength, 0, connectionFadeOut);
+
+      if (state.strength <= minVisibleConnectionStrength) {
+        directConnectionStates.delete(key);
+        continue;
+      }
+
+      drawDirectConnectionLine(state.left, state.right, state.strength);
+    }
+  }
+
+  function drawSmoothedCurveConnection(key, leftParticle, middleParticle, rightParticle, curveData, activeConnectionKeys) {
+    activeConnectionKeys.add(key);
+
+    const state = curveConnectionStates.get(key) || {
+      left: leftParticle,
+      middle: middleParticle,
+      right: rightParticle,
+      controlX: curveData.controlX,
+      controlY: curveData.controlY,
+      strength: 0,
+    };
+
+    state.left = leftParticle;
+    state.middle = middleParticle;
+    state.right = rightParticle;
+    state.controlX = curveData.controlX;
+    state.controlY = curveData.controlY;
+    state.strength = p.lerp(state.strength, curveData.targetStrength, connectionFadeIn);
+    curveConnectionStates.set(key, state);
+
+    if (state.strength > minVisibleConnectionStrength) {
+      drawCurveConnectionLine(leftParticle, middleParticle, rightParticle, state.controlX, state.controlY, state.strength);
+    }
+  }
+
+  function fadeInactiveCurveConnections(activeConnectionKeys) {
+    for (const [key, state] of curveConnectionStates) {
+      if (activeConnectionKeys.has(key)) {
+        continue;
+      }
+
+      if (shouldDropSmoothedConnection(state)) {
+        curveConnectionStates.delete(key);
+        continue;
+      }
+
+      state.strength = p.lerp(state.strength, 0, curveConnectionFadeOut);
+
+      if (state.strength <= minVisibleConnectionStrength) {
+        curveConnectionStates.delete(key);
+        continue;
+      }
+
+      drawCurveConnectionLine(
+        state.left,
+        state.middle,
+        state.right,
+        state.controlX,
+        state.controlY,
+        state.strength
+      );
+    }
+  }
+
+  function drawSmoothedMouseCurveConnection(key, middleParticle, targetParticle, curveData, activeConnectionKeys) {
+    activeConnectionKeys.add(key);
+
+    const state = mouseCurveConnectionStates.get(key) || {
+      middle: middleParticle,
+      target: targetParticle,
+      startX: curveData.startX,
+      startY: curveData.startY,
+      endX: curveData.endX,
+      endY: curveData.endY,
+      controlX: curveData.controlX,
+      controlY: curveData.controlY,
+      strength: 0,
+    };
+
+    state.middle = middleParticle;
+    state.target = targetParticle;
+    state.startX = curveData.startX;
+    state.startY = curveData.startY;
+    state.endX = curveData.endX;
+    state.endY = curveData.endY;
+    state.controlX = curveData.controlX;
+    state.controlY = curveData.controlY;
+    state.strength = p.lerp(state.strength, curveData.targetStrength, connectionFadeIn);
+    mouseCurveConnectionStates.set(key, state);
+
+    if (state.strength > minVisibleConnectionStrength) {
+      drawMouseCurveConnectionLine(state);
+    }
+  }
+
+  function fadeInactiveMouseCurveConnections(activeConnectionKeys) {
+    for (const [key, state] of mouseCurveConnectionStates) {
+      if (activeConnectionKeys.has(key)) {
+        continue;
+      }
+
+      if (shouldDropMouseCurveConnection(state)) {
+        mouseCurveConnectionStates.delete(key);
+        continue;
+      }
+
+      state.strength = p.lerp(state.strength, 0, curveConnectionFadeOut);
+
+      if (state.strength <= minVisibleConnectionStrength) {
+        mouseCurveConnectionStates.delete(key);
+        continue;
+      }
+
+      drawMouseCurveConnectionLine(state);
+    }
   }
 
   function getParticleIndexes() {
@@ -449,44 +1154,61 @@ const sketch = (p) => {
   function calculateNearParticles() {
     for (let index = 0; index < particles.length; index += 1) {
       particles[index].connections = 0;
-      particles[index].calculateNearParticles(particles);
     }
+
+    updateNearbyParticlesIfNeeded();
   }
 
-  function drawDirectParticleConnections(particleIndexes) {
+  function drawDirectParticleConnections() {
     const drawnConnections = new Set();
+    let connectionCount = 0;
 
     for (let index = 0; index < particles.length; index += 1) {
       const particle = particles[index];
+      const nearbyParticles = nearbyParticlesByIndex[index] || [];
 
-      for (let neighborIndex = 0; neighborIndex < particle.nearParticles.length; neighborIndex += 1) {
-        const neighbor = particle.nearParticles[neighborIndex];
-        const neighborParticleIndex = particleIndexes.get(neighbor);
-
-        if (neighborParticleIndex === undefined) {
-          continue;
+      for (let neighborIndex = 0; neighborIndex < nearbyParticles.length; neighborIndex += 1) {
+        if (
+          particle.skipConnectionsUntilNeighborRecalc ||
+          wasConnectionInvalidatedThisFrame(particle) ||
+          particle.connections >= maxConnections
+        ) {
+          break;
         }
 
-        const connectionKey = getConnectionKey(index, neighborParticleIndex);
+        const nearbyParticle = nearbyParticles[neighborIndex];
+        const connectionKey = getConnectionKey(index, nearbyParticle.index);
 
         if (drawnConnections.has(connectionKey)) {
           continue;
         }
 
-        drawnConnections.add(connectionKey);
-        particle.connect(neighbor);
+        if (particle.connectToNearbyParticle(nearbyParticle, connectionKey, drawnConnections)) {
+          drawnConnections.add(connectionKey);
+          connectionCount += 1;
+        }
       }
     }
 
+    fadeInactiveDirectConnections(drawnConnections);
+    profileCounters.directConnections = connectionCount;
     return drawnConnections;
   }
 
   function drawIndirectParticleConnections(particleIndexes, directConnectionKeys) {
     const drawnCurves = new Set();
+    let curveConnectionCount = 0;
 
     for (let index = 0; index < particles.length; index += 1) {
       const particle = particles[index];
       let curveConnections = 0;
+
+      if (
+        particle.skipConnectionsUntilNeighborRecalc ||
+        wasConnectionInvalidatedThisFrame(particle)
+      ) {
+        continue;
+      }
 
       for (let middleIndex = 0; middleIndex < particle.nearParticles.length; middleIndex += 1) {
         if (curveConnections >= maxCurveConnections) {
@@ -495,10 +1217,21 @@ const sketch = (p) => {
 
         const middleParticle = particle.nearParticles[middleIndex];
 
+        if (
+          middleParticle.skipConnectionsUntilNeighborRecalc ||
+          wasConnectionInvalidatedThisFrame(middleParticle)
+        ) {
+          continue;
+        }
+
         for (let targetIndex = 0; targetIndex < middleParticle.nearParticles.length; targetIndex += 1) {
           const targetParticle = middleParticle.nearParticles[targetIndex];
 
-          if (targetParticle === particle) {
+          if (
+            targetParticle === particle ||
+            targetParticle.skipConnectionsUntilNeighborRecalc ||
+            wasConnectionInvalidatedThisFrame(targetParticle)
+          ) {
             continue;
           }
 
@@ -515,12 +1248,127 @@ const sketch = (p) => {
           }
 
           drawnCurves.add(connectionKey);
-          particle.connectToParticleThroughParticle(targetParticle, middleParticle);
+          particle.connectToParticleThroughParticle(
+            targetParticle,
+            middleParticle,
+            connectionKey,
+            drawnCurves
+          );
           curveConnections += 1;
+          curveConnectionCount += 1;
           break;
         }
       }
     }
+
+    fadeInactiveCurveConnections(drawnCurves);
+    profileCounters.curveConnections = curveConnectionCount;
+  }
+
+  function drawMouseConnections() {
+    const activeMouseDirectKeys = new Set();
+    const mouseNearbyParticleIndexes = new Set();
+    const activeMouseCurveKeys = new Set();
+    const mouseNearbyCandidates = [];
+    let mouseConnections = 0;
+    let mouseCurveConnections = 0;
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const particle = particles[index];
+
+      if (
+        particle.skipConnectionsUntilNeighborRecalc ||
+        wasConnectionInvalidatedThisFrame(particle)
+      ) {
+        continue;
+      }
+
+      const distanceSquared = squaredDistanceBetweenPoints(
+        p.mouseX,
+        p.mouseY,
+        particle.position.x,
+        particle.position.y
+      );
+
+      if (distanceSquared > 0 && distanceSquared <= neighborRadiusSquared) {
+        mouseNearbyCandidates.push({
+          index,
+          particle,
+          distanceSquared,
+        });
+      }
+    }
+
+    mouseNearbyCandidates.sort((left, right) => left.distanceSquared - right.distanceSquared);
+
+    for (
+      let index = 0;
+      index < mouseNearbyCandidates.length && mouseConnections < maxMouseConnections;
+      index += 1
+    ) {
+      const candidate = mouseNearbyCandidates[index];
+      const distance = Math.sqrt(candidate.distanceSquared);
+      const connectionStrength = p.map(
+        distance,
+        0,
+        maxDistanceConnect,
+        maxMouseConnectionStrength,
+        0,
+        true
+      );
+      const connectionKey = `mouse-direct:${candidate.index}`;
+
+      drawSmoothedMouseDirectConnection(
+        connectionKey,
+        candidate.particle,
+        connectionStrength,
+        activeMouseDirectKeys
+      );
+      mouseNearbyParticleIndexes.add(candidate.index);
+      mouseConnections += 1;
+    }
+
+    for (const middleParticleIndex of mouseNearbyParticleIndexes) {
+      if (mouseCurveConnections >= maxMouseCurveConnections) {
+        break;
+      }
+
+      const middleParticle = particles[middleParticleIndex];
+      const nearbyParticles = nearbyParticlesByIndex[middleParticleIndex] || [];
+      let curveConnections = 0;
+
+      for (let index = 0; index < nearbyParticles.length; index += 1) {
+        if (
+          curveConnections >= maxCurveConnections ||
+          mouseCurveConnections >= maxMouseCurveConnections
+        ) {
+          break;
+        }
+
+        const targetNearbyParticle = nearbyParticles[index];
+        const connectionKey = `mouse:${middleParticleIndex}:${targetNearbyParticle.index}`;
+
+        if (mouseNearbyParticleIndexes.has(targetNearbyParticle.index)) {
+          continue;
+        }
+
+        if (
+          drawMouseCurveConnection(
+            targetNearbyParticle.particle,
+            middleParticle,
+            connectionKey,
+            activeMouseCurveKeys
+          )
+        ) {
+          curveConnections += 1;
+          mouseCurveConnections += 1;
+        }
+      }
+    }
+
+    fadeInactiveMouseDirectConnections(activeMouseDirectKeys);
+    fadeInactiveMouseCurveConnections(activeMouseCurveKeys);
+    profileCounters.mouseConnections = mouseConnections;
   }
 
   p.setup = () => {
@@ -528,6 +1376,9 @@ const sketch = (p) => {
     canvas.parent("sketch-root");
     cols = p.ceil(p.width / fieldScale);
     rows = p.ceil(p.height / fieldScale);
+    updateParticleCountLimits();
+    updateProfileParticleCount();
+    targetParticleCount = shouldProfileFrame ? profileParticleCount : initialParticleCount;
 
     const flowFieldToggle = document.getElementById("toggle-flow-field");
     if (flowFieldToggle) {
@@ -538,50 +1389,88 @@ const sketch = (p) => {
     }
 
     syncParticlePopulation();
+    logParticleCountState("setup:afterSync");
   };
 
   p.draw = () => {
-    recordFrameSample();
-    updateTargetParticleCount();
-    p.clear();
-    updateFlowField();
+    const frameStartedAt = now();
+    const frameProfile = {};
 
-    for (let index = 0; index < particles.length; index += 1) {
-      particles[index].followFlowField();
-      particles[index].move();
-    }
+    measureFrameStep(frameProfile, "frameAdmin", () => {
+      recordFrameSample();
+      updateTargetParticleCount();
+    });
 
-    for (let index = particles.length - 1; index >= 0; index -= 1) {
-      if (particles[index].shouldRemove) {
-        particles.splice(index, 1);
+    measureFrameStep(frameProfile, "clear", () => {
+      p.clear();
+    });
+
+    measureFrameStep(frameProfile, "updateFlowField", () => {
+      updateFlowField();
+    });
+
+    measureFrameStep(frameProfile, "moveParticles", () => {
+      for (let index = 0; index < particles.length; index += 1) {
+        particles[index].followFlowField();
+        particles[index].move();
       }
-    }
+    });
 
-    const orderedParticles = [...particles].sort((left, right) => left.size - right.size);
+    measureFrameStep(frameProfile, "removeParticles", () => {
+      for (let index = particles.length - 1; index >= 0; index -= 1) {
+        if (particles[index].shouldRemove) {
+          particles.splice(index, 1);
+        }
+      }
+    });
 
-    calculateNearParticles();
-    const particleIndexes = getParticleIndexes();
-    const directConnectionKeys = drawDirectParticleConnections(particleIndexes);
-    drawIndirectParticleConnections(particleIndexes, directConnectionKeys);
+    const orderedParticles = measureFrameStep(frameProfile, "sortParticles", () => {
+      return [...particles].sort((left, right) => left.size - right.size);
+    });
 
-    for (let index = 0; index < particles.length; index += 1) {
-      particles[index].connectToPoint(p.mouseX, p.mouseY, maxMouseConnectionStrength);
-    }
+    measureFrameStep(frameProfile, "calculateNearParticles", () => {
+      calculateNearParticles();
+    });
+
+    const particleIndexes = measureFrameStep(frameProfile, "getParticleIndexes", () => {
+      return getParticleIndexes();
+    });
+
+    const directConnectionKeys = measureFrameStep(frameProfile, "drawDirectConnections", () => {
+      return drawDirectParticleConnections();
+    });
+
+    measureFrameStep(frameProfile, "drawCurveConnections", () => {
+      drawIndirectParticleConnections(particleIndexes, directConnectionKeys);
+    });
+
+    measureFrameStep(frameProfile, "drawMouseConnections", () => {
+      drawMouseConnections();
+    });
 
     if (shouldDrawFlowField) {
-      drawFlowField();
+      measureFrameStep(frameProfile, "drawFlowField", () => {
+        drawFlowField();
+      });
     }
 
-    p.noFill();
-    p.stroke(245, 158, 11, 22);
-    p.circle(p.width * 0.78, p.height * 0.18, 260 + p.sin(p.frameCount * 0.01) * 18);
-    p.stroke(125, 211, 252, 18);
-    p.circle(p.width * 0.18, p.height * 0.68, 340 + p.cos(p.frameCount * 0.02) * 24);
+    measureFrameStep(frameProfile, "drawRings", () => {
+      p.noFill();
+      p.stroke(245, 158, 11, 22);
+      p.circle(p.width * 0.78, p.height * 0.18, 260 + p.sin(p.frameCount * 0.01) * 18);
+      p.stroke(125, 211, 252, 18);
+      p.circle(p.width * 0.18, p.height * 0.68, 340 + p.cos(p.frameCount * 0.02) * 24);
+    });
 
+    measureFrameStep(frameProfile, "drawParticles", () => {
+      for (let index = 0; index < orderedParticles.length; index += 1) {
+        orderedParticles[index].draw();
+      }
+    });
 
-    for (let index = 0; index < orderedParticles.length; index += 1) {
-      orderedParticles[index].draw();
-    }
+    frameProfile.totalFrame = now() - frameStartedAt;
+    recordProfileSample(frameProfile);
+    drawProfileOverlay();
 
   };
 
@@ -589,6 +1478,11 @@ const sketch = (p) => {
     p.resizeCanvas(p.windowWidth, p.windowHeight);
     cols = p.ceil(p.width / fieldScale);
     rows = p.ceil(p.height / fieldScale);
+    updateParticleCountLimits();
+    updateProfileParticleCount();
+    targetParticleCount = shouldProfileFrame ? profileParticleCount : initialParticleCount;
+    syncParticlePopulation();
+    logParticleCountState("windowResized:afterSync");
   };
 };
 
