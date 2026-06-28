@@ -19,6 +19,7 @@ const sketch = (p) => {
   const maxConnectionStrengh = 12;
   const maxMouseConnectionStrength = 25;
   const maxConnections = 5;
+  const maxCurveConnections = 2;
   const maxForce = 1.00;
   const targetFPS = 59;
   const fpsWindowMs = 10000;
@@ -209,6 +210,7 @@ const sketch = (p) => {
       this.isRetiring = false;
       this.shouldRemove = false;
       this.connections = 0;
+      this.nearParticles = [];
     }
 
     retire() {
@@ -296,14 +298,15 @@ const sketch = (p) => {
     }
 
     connectToPoint(targetX, targetY, maxStrength = maxConnectionStrengh) {
-      const distance = p.dist(
-        this.position.x,
-        this.position.y,
-        targetX,
-        targetY
-      );
+      const startX = this.position.x;
+      const startY = this.position.y;
+      const endX = targetX;
+      const endY = targetY;
+      const dx = endX - startX;
+      const dy = endY - startY;
+      const distance = p.sqrt(dx * dx + dy * dy);
 
-      if (distance < maxDistanceConnect){
+      if (distance > 0 && distance < maxDistanceConnect){
         const connectionStrength = p.map(
           distance,
           0,
@@ -315,11 +318,11 @@ const sketch = (p) => {
 
         p.stroke(255, 255, 255, connectionStrength);
         p.line(
-          this.position.x,
-          this.position.y,
-          targetX,
-          targetY
-        )
+          startX,
+          startY,
+          endX,
+          endY
+        );
 
         this.connections = this.connections+1;
       }
@@ -327,6 +330,68 @@ const sketch = (p) => {
 
     connect(other){
       this.connectToPoint(other.position.x, other.position.y);
+    }
+
+    connectToParticleThroughParticle(targetParticle, middleParticle) {
+      const startX = this.position.x;
+      const startY = this.position.y;
+      const middleX = middleParticle.position.x;
+      const middleY = middleParticle.position.y;
+      const endX = targetParticle.position.x;
+      const endY = targetParticle.position.y;
+      const totalDistance =
+        p.dist(startX, startY, middleX, middleY) +
+        p.dist(middleX, middleY, endX, endY);
+      const connectionStrength = p.map(
+        totalDistance,
+        0,
+        maxDistanceConnect * 2,
+        maxConnectionStrengh,
+        0,
+        true
+      );
+
+      const curveT = 0.5;
+      const curveAttraction = 0.5;
+      const straightX = startX + (endX - startX) * curveT;
+      const straightY = startY + (endY - startY) * curveT;
+      const controlX = straightX + (middleX - straightX) * curveAttraction;
+      const controlY = straightY + (middleY - straightY) * curveAttraction;
+
+      p.noFill();
+      p.stroke(255, 255, 255, connectionStrength);
+      p.beginShape();
+      p.vertex(startX, startY);
+      p.quadraticVertex(controlX, controlY, endX, endY);
+      p.endShape();
+    }
+
+    calculateNearParticles(allParticles) {
+      const nearParticleCandidates = [];
+
+      for (let index = 0; index < allParticles.length; index += 1) {
+        const particle = allParticles[index];
+
+        if (particle === this) {
+          continue;
+        }
+
+        const distance = p.dist(
+          this.position.x,
+          this.position.y,
+          particle.position.x,
+          particle.position.y
+        );
+
+        if (distance > 0 && distance < maxDistanceConnect) {
+          nearParticleCandidates.push({ particle, distance });
+        }
+      }
+
+      nearParticleCandidates.sort((left, right) => left.distance - right.distance);
+      this.nearParticles = nearParticleCandidates
+        .slice(0, maxConnections)
+        .map((candidate) => candidate.particle);
     }
 
     move() {
@@ -362,6 +427,99 @@ const sketch = (p) => {
       p.noStroke();
       p.fill(p.red(this.color), p.green(this.color), p.blue(this.color), this.getCurrentAlpha());
       p.circle(this.position.x, this.position.y, this.size);
+    }
+  }
+
+  function getConnectionKey(leftIndex, rightIndex) {
+    return leftIndex < rightIndex
+      ? `${leftIndex}:${rightIndex}`
+      : `${rightIndex}:${leftIndex}`;
+  }
+
+  function getParticleIndexes() {
+    const particleIndexes = new Map();
+
+    for (let index = 0; index < particles.length; index += 1) {
+      particleIndexes.set(particles[index], index);
+    }
+
+    return particleIndexes;
+  }
+
+  function calculateNearParticles() {
+    for (let index = 0; index < particles.length; index += 1) {
+      particles[index].connections = 0;
+      particles[index].calculateNearParticles(particles);
+    }
+  }
+
+  function drawDirectParticleConnections(particleIndexes) {
+    const drawnConnections = new Set();
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const particle = particles[index];
+
+      for (let neighborIndex = 0; neighborIndex < particle.nearParticles.length; neighborIndex += 1) {
+        const neighbor = particle.nearParticles[neighborIndex];
+        const neighborParticleIndex = particleIndexes.get(neighbor);
+
+        if (neighborParticleIndex === undefined) {
+          continue;
+        }
+
+        const connectionKey = getConnectionKey(index, neighborParticleIndex);
+
+        if (drawnConnections.has(connectionKey)) {
+          continue;
+        }
+
+        drawnConnections.add(connectionKey);
+        particle.connect(neighbor);
+      }
+    }
+
+    return drawnConnections;
+  }
+
+  function drawIndirectParticleConnections(particleIndexes, directConnectionKeys) {
+    const drawnCurves = new Set();
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const particle = particles[index];
+      let curveConnections = 0;
+
+      for (let middleIndex = 0; middleIndex < particle.nearParticles.length; middleIndex += 1) {
+        if (curveConnections >= maxCurveConnections) {
+          break;
+        }
+
+        const middleParticle = particle.nearParticles[middleIndex];
+
+        for (let targetIndex = 0; targetIndex < middleParticle.nearParticles.length; targetIndex += 1) {
+          const targetParticle = middleParticle.nearParticles[targetIndex];
+
+          if (targetParticle === particle) {
+            continue;
+          }
+
+          const targetParticleIndex = particleIndexes.get(targetParticle);
+
+          if (targetParticleIndex === undefined) {
+            continue;
+          }
+
+          const connectionKey = getConnectionKey(index, targetParticleIndex);
+
+          if (directConnectionKeys.has(connectionKey) || drawnCurves.has(connectionKey)) {
+            continue;
+          }
+
+          drawnCurves.add(connectionKey);
+          particle.connectToParticleThroughParticle(targetParticle, middleParticle);
+          curveConnections += 1;
+          break;
+        }
+      }
     }
   }
 
@@ -401,15 +559,12 @@ const sketch = (p) => {
 
     const orderedParticles = [...particles].sort((left, right) => left.size - right.size);
 
-    for (let index = 0; index < particles.length; index += 1) {
-      particles[index].connections = 0;
-      for (let jindex = index; jindex < particles.length-1; jindex += 1) {
-        if(particles[index].connections>=maxConnections){
-          break
-        }
-        particles[index].connect(particles[jindex])
-      }
+    calculateNearParticles();
+    const particleIndexes = getParticleIndexes();
+    const directConnectionKeys = drawDirectParticleConnections(particleIndexes);
+    drawIndirectParticleConnections(particleIndexes, directConnectionKeys);
 
+    for (let index = 0; index < particles.length; index += 1) {
       particles[index].connectToPoint(p.mouseX, p.mouseY, maxMouseConnectionStrength);
     }
 
