@@ -36,10 +36,14 @@ const sketch = (p) => {
   const minVisibleConnectionStrength = 0.15;
   const mouseCurveBend = 0.22;
   const maxForce = 1.00;
-  const targetFPS = 58;
   const fpsWindowMs = 2000;
   const fpsAdjustmentIntervalMs = 1000;
-  const fpsRecoveryThreshold = 59.25;
+  const fallbackRefreshRate = 60;
+  const minDetectedRefreshRate = 24;
+  const maxDetectedRefreshRate = 144;
+  const minFrameBudgetSamples = 20;
+  const frameBudgetPressureThreshold = 0.85;
+  const frameBudgetRecoveryThreshold = 0.55;
   const particleRecoveryStep = 12;
   const perfQuery = new URLSearchParams(window.location.search);
   const shouldProfileFrame = perfQuery.get("perf") === "1";
@@ -58,6 +62,7 @@ const sketch = (p) => {
   let targetParticleCount = initialParticleCount;
   let lastParticleAdjustmentAt = 0;
   const frameSamples = [];
+  const frameCostSamples = [];
   const profileSamples = [];
   const profileAverages = {};
   const profileCounters = {
@@ -76,6 +81,8 @@ const sketch = (p) => {
   const mouseDirectConnectionStates = new Map();
   const mouseCurveConnectionStates = new Map();
   let frameTimeTotal = 0;
+  let frameCostTotal = 0;
+  let detectedRefreshRate = fallbackRefreshRate;
 
   function now() {
     return performance.now();
@@ -118,6 +125,35 @@ const sketch = (p) => {
     );
   }
 
+  function getFrameBudgetMs() {
+    return 1000 / detectedRefreshRate;
+  }
+
+  function updateDetectedRefreshRate() {
+    if (frameSamples.length < minFrameBudgetSamples) {
+      return;
+    }
+
+    const sortedDurations = frameSamples
+      .map((sample) => sample.frameDuration)
+      .filter((frameDuration) => frameDuration > 0)
+      .sort((left, right) => left - right);
+
+    if (sortedDurations.length < minFrameBudgetSamples) {
+      return;
+    }
+
+    const fastFrameIndex = Math.floor(sortedDurations.length * 0.1);
+    const fastFrameDuration = sortedDurations[fastFrameIndex];
+    const refreshRate = 1000 / fastFrameDuration;
+
+    detectedRefreshRate = p.constrain(
+      refreshRate,
+      minDetectedRefreshRate,
+      maxDetectedRefreshRate
+    );
+  }
+
   function logParticleCountState(label) {
     if (!shouldLogParticleCounts) {
       return;
@@ -152,6 +188,10 @@ const sketch = (p) => {
       profileParticleCount,
       targetParticleCount,
       activeParticleCount: getActiveParticleCount(),
+      detectedRefreshRate,
+      frameBudgetMs: getFrameBudgetMs(),
+      averageFPS: getAverageFPS(),
+      averageFrameCostMs: getAverageFrameCost(),
       shouldProfileFrame,
       requestedProfileParticleCount,
     });
@@ -218,6 +258,10 @@ const sketch = (p) => {
       initialParticleCount,
       maxParticleCount,
       profileParticleCount,
+      detectedRefreshRate,
+      frameBudgetMs: getFrameBudgetMs(),
+      averageFPS: getAverageFPS(),
+      averageFrameCostMs: getAverageFrameCost(),
     };
 
     window.__particlePerformance = particlePerformance;
@@ -244,29 +288,33 @@ const sketch = (p) => {
     ];
     const averageFPS = getAverageFPS();
     const currentFPS = p.deltaTime > 0 ? 1000 / p.deltaTime : 0;
+    const frameBudgetMs = getFrameBudgetMs();
+    const averageFrameCost = getAverageFrameCost();
 
     p.push();
     p.noStroke();
     p.fill(2, 6, 23, 220);
-    p.rect(16, 16, 260, 434, 6);
+    p.rect(16, 16, 260, 482, 6);
     p.fill(226, 232, 240);
     p.textSize(12);
     p.textAlign(p.LEFT, p.TOP);
     p.text(`perf ${particles.length}/${targetParticleCount} particles`, 28, 28);
     p.text(`limits min ${minParticleCount} init ${initialParticleCount} max ${maxParticleCount}`, 28, 48);
     p.text(`fps avg ${averageFPS.toFixed(1)} now ${currentFPS.toFixed(1)}`, 28, 68);
-    p.text(`near links ${profileCounters.nearLinks}`, 28, 88);
-    p.text(`near checks ${profileCounters.nearComparisons}`, 28, 108);
-    p.text(`grid cells ${profileCounters.neighborCells}`, 28, 128);
-    p.text(`recalc ${profileCounters.neighborRecalculated ? "yes" : "no"}`, 28, 148);
-    p.text(`direct ${profileCounters.directConnections}`, 28, 168);
-    p.text(`curves ${profileCounters.curveConnections}`, 28, 188);
-    p.text(`mouse ${profileCounters.mouseConnections}`, 28, 208);
+    p.text(`refresh ${detectedRefreshRate.toFixed(1)}hz budget ${frameBudgetMs.toFixed(2)}ms`, 28, 88);
+    p.text(`draw avg ${averageFrameCost.toFixed(2)}ms`, 28, 108);
+    p.text(`near links ${profileCounters.nearLinks}`, 28, 128);
+    p.text(`near checks ${profileCounters.nearComparisons}`, 28, 148);
+    p.text(`grid cells ${profileCounters.neighborCells}`, 28, 168);
+    p.text(`recalc ${profileCounters.neighborRecalculated ? "yes" : "no"}`, 28, 188);
+    p.text(`direct ${profileCounters.directConnections}`, 28, 208);
+    p.text(`curves ${profileCounters.curveConnections}`, 28, 228);
+    p.text(`mouse ${profileCounters.mouseConnections}`, 28, 248);
 
     for (let index = 0; index < rows.length; index += 1) {
       const [label, value] = rows[index];
       const textValue = value === undefined ? "--" : `${value.toFixed(2)}ms`;
-      p.text(`${label}: ${textValue}`, 28, 236 + index * 16);
+      p.text(`${label}: ${textValue}`, 28, 284 + index * 16);
     }
 
     p.pop();
@@ -322,14 +370,36 @@ const sketch = (p) => {
       frameTimeTotal -= frameSamples[0].frameDuration;
       frameSamples.shift();
     }
+
+    updateDetectedRefreshRate();
+  }
+
+  function recordFrameCostSample(frameCost) {
+    const now = p.millis();
+
+    frameCostSamples.push({ now, frameCost });
+    frameCostTotal += frameCost;
+
+    while (frameCostSamples.length > 0 && now - frameCostSamples[0].now > fpsWindowMs) {
+      frameCostTotal -= frameCostSamples[0].frameCost;
+      frameCostSamples.shift();
+    }
   }
 
   function getAverageFPS() {
     if (frameTimeTotal <= 0) {
-      return targetFPS;
+      return detectedRefreshRate;
     }
 
     return frameSamples.length / (frameTimeTotal / 1000);
+  }
+
+  function getAverageFrameCost() {
+    if (frameCostSamples.length === 0) {
+      return 0;
+    }
+
+    return frameCostTotal / frameCostSamples.length;
   }
 
   function updateTargetParticleCount() {
@@ -348,17 +418,26 @@ const sketch = (p) => {
 
     lastParticleAdjustmentAt = now;
 
-    const averageFPS = getAverageFPS();
+    if (frameCostSamples.length < minFrameBudgetSamples) {
+      return;
+    }
 
-    if (averageFPS < targetFPS) {
-      const scaledTarget = Math.floor(targetParticleCount * (averageFPS / targetFPS) * 0.96);
+    const averageFrameCost = getAverageFrameCost();
+    const frameBudgetMs = getFrameBudgetMs();
+    const pressureThresholdMs = frameBudgetMs * frameBudgetPressureThreshold;
+    const recoveryThresholdMs = frameBudgetMs * frameBudgetRecoveryThreshold;
+
+    if (averageFrameCost > pressureThresholdMs) {
+      const scaledTarget = Math.floor(
+        targetParticleCount * (pressureThresholdMs / averageFrameCost) * 0.96
+      );
       targetParticleCount = p.constrain(scaledTarget, minParticleCount, maxParticleCount);
       syncParticlePopulation();
       logParticleCountState("updateTargetParticleCount:decrease");
       return;
     }
 
-    if (averageFPS >= fpsRecoveryThreshold && targetParticleCount < maxParticleCount) {
+    if (averageFrameCost < recoveryThresholdMs && targetParticleCount < maxParticleCount) {
       targetParticleCount = p.constrain(
         targetParticleCount + particleRecoveryStep,
         minParticleCount,
@@ -1469,6 +1548,7 @@ const sketch = (p) => {
     });
 
     frameProfile.totalFrame = now() - frameStartedAt;
+    recordFrameCostSample(frameProfile.totalFrame);
     recordProfileSample(frameProfile);
     drawProfileOverlay();
 
