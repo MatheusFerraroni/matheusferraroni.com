@@ -2,12 +2,25 @@
   "name": "personal-website",
   "private": true,
   "version": "1.0.0",
+  "engines": {
+    "node": "^22.22.0 || >=24.8.0"
+  },
   "scripts": {
+    "build": "npm run build:pages && npm run build:css",
+    "build:pages": "node ./scripts/build-site.mjs",
     "build:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/css/styles.css --minify",
+    "build:check": "node ./scripts/build-site.mjs --check",
+    "build:css:check": "node ./scripts/check-css.mjs",
+    "check": "npm run build:check && npm run build:css:check && npm run validate:html && npm test && node --check ./assets/js/site.js && node --check ./assets/js/sketch.js",
+    "test": "node --test",
+    "validate:html": "html-validate ./index.html ./en/index.html",
     "watch:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/css/styles.css --watch"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.3.0",
     "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "html-validate": "^11.5.6"
   }
 }

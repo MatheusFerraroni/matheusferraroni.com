@@ -49,6 +49,10 @@ const sketch = (p) => {
   const shouldProfileFrame = perfQuery.get("perf") === "1";
   const requestedProfileParticleCount = Number(perfQuery.get("particles"));
   const shouldLogParticleCounts = perfQuery.get("particleLogs") === "1";
+  const reducedMotionQuery =
+    typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)")
+      : null;
   const profileSampleSize = 120;
   let maxParticleCount = referenceParticles;
   let initialParticleCount = Math.floor(maxParticleCount / 2);
@@ -83,9 +87,137 @@ const sketch = (p) => {
   let frameTimeTotal = 0;
   let frameCostTotal = 0;
   let detectedRefreshRate = fallbackRefreshRate;
+  let prefersReducedMotion = reducedMotionQuery ? reducedMotionQuery.matches : false;
+  let animationLoopRunning = true;
+  let animationPausedAt = null;
+  let animationLifecycleListenersAttached = false;
+  let animationResumeRequestId = null;
+  let skipNextFrameSample = false;
 
   function now() {
     return performance.now();
+  }
+
+  function isDocumentVisible() {
+    return document.visibilityState !== "hidden";
+  }
+
+  function shouldRunAnimationLoop() {
+    return isDocumentVisible() && !prefersReducedMotion;
+  }
+
+  function shouldAnimateFrame() {
+    return animationLoopRunning && shouldRunAnimationLoop();
+  }
+
+  function resetFrameMeasurements() {
+    frameSamples.length = 0;
+    frameCostSamples.length = 0;
+    frameTimeTotal = 0;
+    frameCostTotal = 0;
+    lastParticleAdjustmentAt = p.millis();
+    skipNextFrameSample = true;
+  }
+
+  function resumeParticleLifetimes(resumedAt) {
+    if (animationPausedAt === null) {
+      return;
+    }
+
+    for (let index = 0; index < particles.length; index += 1) {
+      const particle = particles[index];
+      const particlePausedAt = Math.max(animationPausedAt, particle.birthTime);
+      particle.birthTime += Math.max(0, resumedAt - particlePausedAt);
+    }
+
+    animationPausedAt = null;
+  }
+
+  function requestStaticFrame() {
+    if (isDocumentVisible()) {
+      p.redraw();
+    }
+  }
+
+  function cancelScheduledAnimationResume() {
+    if (animationResumeRequestId === null) {
+      return;
+    }
+
+    window.cancelAnimationFrame(animationResumeRequestId);
+    animationResumeRequestId = null;
+  }
+
+  function scheduleAnimationResume() {
+    if (animationLoopRunning || animationResumeRequestId !== null) {
+      return;
+    }
+
+    animationResumeRequestId = window.requestAnimationFrame(() => {
+      animationResumeRequestId = null;
+
+      if (animationLoopRunning || !shouldRunAnimationLoop()) {
+        return;
+      }
+
+      resumeParticleLifetimes(p.millis());
+      resetFrameMeasurements();
+      animationLoopRunning = true;
+      p.loop();
+    });
+  }
+
+  function syncAnimationLoop({ renderStaticFrame = false } = {}) {
+    if (shouldRunAnimationLoop()) {
+      if (!animationLoopRunning) {
+        scheduleAnimationResume();
+      }
+
+      return;
+    }
+
+    cancelScheduledAnimationResume();
+
+    if (animationLoopRunning) {
+      animationPausedAt = p.millis();
+      animationLoopRunning = false;
+      p.noLoop();
+    }
+
+    settleStaticParticlePopulation();
+
+    if (renderStaticFrame) {
+      requestStaticFrame();
+    }
+  }
+
+  function handleReducedMotionChange(event) {
+    prefersReducedMotion = event.matches;
+    syncAnimationLoop({ renderStaticFrame: prefersReducedMotion });
+  }
+
+  function handleVisibilityChange() {
+    syncAnimationLoop({
+      renderStaticFrame: isDocumentVisible() && prefersReducedMotion,
+    });
+  }
+
+  function attachAnimationLifecycleListeners() {
+    if (animationLifecycleListenersAttached) {
+      return;
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    if (reducedMotionQuery) {
+      if (typeof reducedMotionQuery.addEventListener === "function") {
+        reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+      } else if (typeof reducedMotionQuery.addListener === "function") {
+        reducedMotionQuery.addListener(handleReducedMotionChange);
+      }
+    }
+
+    animationLifecycleListenersAttached = true;
   }
 
   function squaredDistanceBetweenPoints(startX, startY, endX, endY) {
@@ -332,7 +464,61 @@ const sketch = (p) => {
     return activeParticleCount;
   }
 
+  function clearParticleConnectionTracking() {
+    spatialGrid = new Map();
+    nearbyParticlesByIndex = [];
+    directConnectionStates.clear();
+    curveConnectionStates.clear();
+    mouseDirectConnectionStates.clear();
+    mouseCurveConnectionStates.clear();
+
+    for (let index = 0; index < particles.length; index += 1) {
+      particles[index].nearParticles = [];
+      particles[index].connections = 0;
+      particles[index].skipConnectionsUntilNeighborRecalc = false;
+    }
+
+    profileCounters.directConnections = 0;
+    profileCounters.curveConnections = 0;
+    profileCounters.mouseConnections = 0;
+    profileCounters.nearLinks = 0;
+    profileCounters.nearComparisons = 0;
+    profileCounters.neighborCells = 0;
+    profileCounters.neighborRecalculated = false;
+  }
+
+  function settleStaticParticlePopulation() {
+    const staticTargetParticleCount = Math.max(0, Math.round(targetParticleCount));
+    let populationChanged = false;
+
+    for (let index = particles.length - 1; index >= 0; index -= 1) {
+      if (particles[index].isRetiring || particles[index].shouldRemove) {
+        particles.splice(index, 1);
+        populationChanged = true;
+      }
+    }
+
+    while (particles.length > staticTargetParticleCount) {
+      particles.pop();
+      populationChanged = true;
+    }
+
+    while (particles.length < staticTargetParticleCount) {
+      particles.push(new Particle());
+      populationChanged = true;
+    }
+
+    if (populationChanged) {
+      clearParticleConnectionTracking();
+    }
+  }
+
   function syncParticlePopulation() {
+    if (!shouldAnimateFrame()) {
+      settleStaticParticlePopulation();
+      return;
+    }
+
     while (getActiveParticleCount() < targetParticleCount) {
       particles.push(new Particle());
     }
@@ -448,7 +634,7 @@ const sketch = (p) => {
     }
   }
 
-  function updateFlowField() {
+  function updateFlowField(advanceAnimation = true) {
     flowField = new Array(cols * rows);
     flowFieldStrengths = new Array(cols * rows);
 
@@ -467,7 +653,9 @@ const sketch = (p) => {
       }
     }
 
-    zOffset += zStep;
+    if (advanceAnimation) {
+      zOffset += zStep;
+    }
   }
 
   function drawFlowField() {
@@ -776,9 +964,15 @@ const sketch = (p) => {
       }
     }
 
-    draw() {
+    draw(forceVisible = false) {
+      const currentAlpha = this.getCurrentAlpha();
+      const alpha =
+        forceVisible && !this.isRetiring
+          ? Math.max(currentAlpha, this.alpha * 0.7)
+          : currentAlpha;
+
       p.noStroke();
-      p.fill(p.red(this.color), p.green(this.color), p.blue(this.color), this.getCurrentAlpha());
+      p.fill(p.red(this.color), p.green(this.color), p.blue(this.color), alpha);
       p.circle(this.position.x, this.position.y, this.size);
     }
   }
@@ -1464,44 +1658,60 @@ const sketch = (p) => {
       shouldDrawFlowField = flowFieldToggle.checked;
       flowFieldToggle.addEventListener("change", (event) => {
         shouldDrawFlowField = event.target.checked;
+
+        if (!shouldAnimateFrame()) {
+          requestStaticFrame();
+        }
       });
     }
 
     syncParticlePopulation();
     logParticleCountState("setup:afterSync");
+    attachAnimationLifecycleListeners();
+    syncAnimationLoop();
   };
 
   p.draw = () => {
     const frameStartedAt = now();
     const frameProfile = {};
+    const animateFrame = shouldAnimateFrame();
 
-    measureFrameStep(frameProfile, "frameAdmin", () => {
-      recordFrameSample();
-      updateTargetParticleCount();
-    });
+    if (animateFrame) {
+      measureFrameStep(frameProfile, "frameAdmin", () => {
+        if (skipNextFrameSample) {
+          skipNextFrameSample = false;
+        } else {
+          recordFrameSample();
+        }
+
+        updateTargetParticleCount();
+      });
+    }
 
     measureFrameStep(frameProfile, "clear", () => {
       p.clear();
     });
 
     measureFrameStep(frameProfile, "updateFlowField", () => {
-      updateFlowField();
+      updateFlowField(animateFrame);
     });
 
-    measureFrameStep(frameProfile, "moveParticles", () => {
-      for (let index = 0; index < particles.length; index += 1) {
-        particles[index].followFlowField();
-        particles[index].move();
-      }
-    });
-
-    measureFrameStep(frameProfile, "removeParticles", () => {
-      for (let index = particles.length - 1; index >= 0; index -= 1) {
-        if (particles[index].shouldRemove) {
-          particles.splice(index, 1);
+    if (animateFrame) {
+      measureFrameStep(frameProfile, "moveParticles", () => {
+        for (let index = 0; index < particles.length; index += 1) {
+          particles[index].followFlowField();
+          particles[index].move();
         }
-      }
-    });
+      });
+
+      measureFrameStep(frameProfile, "removeParticles", () => {
+        for (let index = particles.length - 1; index >= 0; index -= 1) {
+          if (particles[index].shouldRemove) {
+            particles.splice(index, 1);
+          }
+        }
+      });
+    }
 
     const orderedParticles = measureFrameStep(frameProfile, "sortParticles", () => {
       return [...particles].sort((left, right) => left.size - right.size);
@@ -1543,19 +1753,23 @@ const sketch = (p) => {
 
     measureFrameStep(frameProfile, "drawParticles", () => {
       for (let index = 0; index < orderedParticles.length; index += 1) {
-        orderedParticles[index].draw();
+        orderedParticles[index].draw(!animateFrame);
       }
     });
 
     frameProfile.totalFrame = now() - frameStartedAt;
-    recordFrameCostSample(frameProfile.totalFrame);
+
+    if (animateFrame) {
+      recordFrameCostSample(frameProfile.totalFrame);
+    }
+
     recordProfileSample(frameProfile);
     drawProfileOverlay();
 
   };
 
   p.windowResized = () => {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    p.resizeCanvas(p.windowWidth, p.windowHeight, true);
     cols = p.ceil(p.width / fieldScale);
     rows = p.ceil(p.height / fieldScale);
     updateParticleCountLimits();
@@ -1563,6 +1777,10 @@ const sketch = (p) => {
     targetParticleCount = shouldProfileFrame ? profileParticleCount : initialParticleCount;
     syncParticlePopulation();
     logParticleCountState("windowResized:afterSync");
+
+    if (!shouldAnimateFrame()) {
+      requestStaticFrame();
+    }
   };
 };
 
