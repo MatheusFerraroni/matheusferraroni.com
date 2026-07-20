@@ -264,8 +264,20 @@ test("social cards have the required dimensions", () => {
 
 test("web manifest is valid and keeps icon paths relative to itself", () => {
   const manifest = JSON.parse(readRepositoryFile("assets/favicon_io/site.webmanifest"));
+  const manifestDirectory = resolve(repositoryRoot, "assets/favicon_io");
+
+  assert.equal(manifest.name, "Matheus Ferraroni Sanches");
+  assert.equal(manifest.short_name, "Matheus Ferraroni");
+  assert.equal(manifest.start_url, "../../");
+  assert.equal(manifest.scope, "../../");
+  assert.equal(manifest.theme_color, "#020617");
+  assert.equal(manifest.background_color, "#020617");
   assert.deepEqual(
     manifest.icons.map((icon) => icon.src),
-    ["android-chrome-192x192.png", "android-chrome-512x512.png"]
+    ["web-app-manifest-192x192.png", "web-app-manifest-512x512.png"]
   );
+
+  for (const icon of manifest.icons) {
+    assert.ok(existsSync(resolve(manifestDirectory, icon.src)), `Missing manifest icon: ${icon.src}`);
+  }
 });

@@ -321,11 +321,11 @@ export const renderPage = (locale) => {
     <meta name="twitter:image" content="${escapeHtml(socialCardUrl)}">
     <meta name="twitter:image:alt" content="${escapeHtml(socialCardAlt)}">
 
+    <link rel="icon" type="image/svg+xml" href="${settings.assetBase}/favicon_io/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="${settings.assetBase}/favicon_io/favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="${settings.assetBase}/favicon_io/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="${settings.assetBase}/favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="${settings.assetBase}/favicon_io/favicon-16x16.png">
     <link rel="manifest" href="${settings.assetBase}/favicon_io/site.webmanifest">
-    <link rel="shortcut icon" href="${settings.assetBase}/favicon_io/favicon.ico">
+    <link rel="icon" href="${settings.assetBase}/favicon_io/favicon.ico" sizes="any">
     <link rel="stylesheet" href="${settings.assetBase}/css/styles.css">
 
     <script type="application/ld+json">
