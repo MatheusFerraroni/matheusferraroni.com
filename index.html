@@ -193,8 +193,8 @@
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="http://lattes.cnpq.br/7066133969704063" target="_blank" rel="noopener noreferrer">Lattes</a>
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://scholar.google.com/citations?hl=pt-BR&amp;user=ZCrxyHUAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://github.com/MatheusFerraroni" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://matheusferraroni.github.io/visual_algo/" target="_blank" rel="noopener noreferrer">Algoritmos Visuais</a>
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="#" id="linkedin-link" aria-disabled="true" data-disabled-message="LinkedIn desativado temporariamente" title="LinkedIn desativado temporariamente">LinkedIn</a>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal">Ferramentas</button>
               <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button">Contato</button>
             </div>
           </aside>
@@ -443,6 +443,22 @@
         </article>
       </section>
     </main>
+
+    <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="tools-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tools-modal-title" inert>
+      <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">Acesso rápido</p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white" id="tools-modal-title">Ferramentas</h2>
+          </div>
+          <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 transition hover:bg-white/10" id="close-tools-modal" type="button">Fechar</button>
+        </div>
+        <div class="mt-6 grid gap-3 text-sm leading-6 text-slate-200">
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://matheusferraroni.github.io/visual_algo/" id="tool-visual-algorithms" target="_blank" rel="noopener noreferrer">Algoritmos Visuais</a>
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://www.mapadasparcelas.com.br/" id="tool-field-map" target="_blank" rel="noopener noreferrer">Mapa das Parcelas</a>
+        </div>
+      </div>
+    </div>
 
     <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="contact-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contact-modal-title" inert>
       <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">

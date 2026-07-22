@@ -56,6 +56,7 @@ export const siteContent = Object.freeze({
     english: "English",
     flowField: text("Campo vetorial", "Flow field"),
     quickAccess: text("Acesso rápido", "Quick access"),
+    tools: text("Ferramentas", "Tools"),
     contact: text("Contato", "Contact"),
     close: text("Fechar", "Close"),
     email: text("E-mail", "Email"),
@@ -106,6 +107,7 @@ export const siteContent = Object.freeze({
     scholar: "https://scholar.google.com/citations?hl=pt-BR&user=ZCrxyHUAAAAJ",
     github: "https://github.com/MatheusFerraroni",
     visualAlgorithms: "https://matheusferraroni.github.io/visual_algo/",
+    fieldMap: "https://www.mapadasparcelas.com.br/",
     dblp: "https://dblp.org/pid/165/3906.html",
     fapesp: "https://bv.fapesp.br/pt/pesquisador/702639/matheus-ferraroni-sanches/",
   },
@@ -114,7 +116,11 @@ export const siteContent = Object.freeze({
     { id: "lattes", label: text("Lattes", "Lattes"), linkKey: "lattes" },
     { id: "google-scholar", label: text("Google Scholar", "Google Scholar"), linkKey: "scholar" },
     { id: "github", label: text("GitHub", "GitHub"), linkKey: "github" },
-    { id: "visual-algorithms", label: text("Algoritmos Visuais", "Visual Algorithms"), linkKey: "visualAlgorithms" },
+  ],
+
+  tools: [
+    { id: "visual-algorithms", label: "Algoritmos Visuais", linkKey: "visualAlgorithms" },
+    { id: "field-map", label: "Mapa das Parcelas", linkKey: "fieldMap" },
   ],
 
   experience: {

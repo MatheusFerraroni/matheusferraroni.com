@@ -79,6 +79,14 @@ const renderQuickLinks = (locale) =>
     )
     .join("");
 
+const renderToolLinks = () =>
+  siteContent.tools
+    .map(
+      (tool) => `
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links[tool.linkKey])}" id="tool-${escapeHtml(tool.id)}"${externalLinkAttributes}>${escapeHtml(tool.label)}</a>`,
+    )
+    .join("");
+
 const renderCurrentExperience = (locale) =>
   siteContent.experience.current
     .map(
@@ -357,6 +365,7 @@ ${renderLanguageNavigation(locale)}
             <p class="mb-4 text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">${text(siteContent.ui.quickAccess, locale)}</p>
             <div class="grid gap-3 text-sm leading-6 text-slate-200">${renderQuickLinks(locale)}
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="#" id="linkedin-link" aria-disabled="true" data-disabled-message="${text(siteContent.ui.linkedinUnavailable, locale)}" title="${text(siteContent.ui.linkedinUnavailable, locale)}">LinkedIn</a>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal">${text(siteContent.ui.tools, locale)}</button>
               <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button">${text(siteContent.ui.contact, locale)}</button>
             </div>
           </aside>
@@ -412,6 +421,20 @@ ${renderLanguageNavigation(locale)}
         </article>
       </section>
     </main>
+
+    <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="tools-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tools-modal-title" inert>
+      <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">${text(siteContent.ui.quickAccess, locale)}</p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white" id="tools-modal-title">${text(siteContent.ui.tools, locale)}</h2>
+          </div>
+          <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 transition hover:bg-white/10" id="close-tools-modal" type="button">${text(siteContent.ui.close, locale)}</button>
+        </div>
+        <div class="mt-6 grid gap-3 text-sm leading-6 text-slate-200">${renderToolLinks()}
+        </div>
+      </div>
+    </div>
 
     <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="contact-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contact-modal-title" inert>
       <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">

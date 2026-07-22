@@ -30,6 +30,7 @@ const pages = [
     ogLocale: "pt_BR",
     socialCard: `${siteOrigin}/assets/image/social-card-pt-br.png`,
     linkedinUnavailable: "LinkedIn desativado temporariamente",
+    toolsLabel: "Ferramentas",
   },
   {
     locale: "en",
@@ -41,6 +42,7 @@ const pages = [
     ogLocale: "en_US",
     socialCard: `${siteOrigin}/assets/image/social-card-en.png`,
     linkedinUnavailable: "LinkedIn temporarily unavailable",
+    toolsLabel: "Tools",
   },
 ];
 
@@ -123,6 +125,8 @@ for (const page of pages) {
     const twitterImage = findTag(html, "meta", "name", "twitter:image");
     const themeColor = findTag(html, "meta", "name", "theme-color");
     const linkedinLink = findTag(html, "a", "id", "linkedin-link");
+    const toolsButton = findTag(html, "button", "id", "tools-button");
+    const toolsModal = findTag(html, "div", "id", "tools-modal");
 
     assert.match(
       html,
@@ -156,6 +160,14 @@ for (const page of pages) {
       page.linkedinUnavailable
     );
     assert.equal(linkedinLink?.attributes.get("title"), page.linkedinUnavailable);
+    assert.equal(
+      html.match(/<button\b[^>]*id="tools-button"[^>]*>([^<]+)<\/button>/)?.[1],
+      page.toolsLabel
+    );
+    assert.equal(toolsButton?.attributes.get("aria-haspopup"), "dialog");
+    assert.equal(toolsButton?.attributes.get("aria-controls"), "tools-modal");
+    assert.equal(toolsModal?.attributes.get("role"), "dialog");
+    assert.equal(toolsModal?.attributes.get("aria-modal"), "true");
     assert.match(html, /<script\b[^>]*src="(?:\.\.\/|\.\/)assets\/js\/site\.js"/);
 
     const alternateTags = tagsWithAttributes(html, "link").filter(
@@ -228,6 +240,28 @@ test("English page does not retain Portuguese interface placeholders", () => {
       !html.includes(localizedText["pt-BR"]),
       `English output still contains localized PT-BR text: ${localizedText["pt-BR"]}`
     );
+  }
+});
+
+test("tools modal exposes the intended external tools without a direct quick link", () => {
+  const expectedTools = [
+    ["tool-visual-algorithms", "https://matheusferraroni.github.io/visual_algo/"],
+    ["tool-field-map", "https://www.mapadasparcelas.com.br/"],
+  ];
+
+  assert.ok(
+    !siteContent.quickLinks.some((link) => link.linkKey === "visualAlgorithms"),
+    "Visual Algorithms must not remain a direct quick link"
+  );
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    for (const [id, href] of expectedTools) {
+      const tool = findTag(html, "a", "id", id);
+      assert.equal(tool?.attributes.get("href"), href);
+      assert.equal(tool?.attributes.get("target"), "_blank");
+      assert.equal(tool?.attributes.get("rel"), "noopener noreferrer");
+    }
   }
 });
 
