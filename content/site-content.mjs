@@ -15,8 +15,8 @@ export const siteContent = Object.freeze({
       "Matheus Ferraroni Sanches is a CTO, professor and computer science researcher working on AI, agtech, NLP, privacy and remote sensing.",
     ),
     summary: text(
-      "CTO na Orion Sistemas Agrícolas e doutorando em Ciência da Computação pela UNICAMP. Atua em pesquisa e desenvolvimento de plataformas para agtech, sensoriamento remoto, processamento de linguagem natural, aprendizado federado, privacidade em LLMs, otimização e redes veiculares.",
-      "CTO at Orion Sistemas Agrícolas and a PhD candidate in Computer Science at UNICAMP. His research and development work spans agtech platforms, remote sensing, natural language processing, federated learning, LLM privacy, optimization, and vehicular networks.",
+      "CTO e diretor de P&D do Grupo Orion Sistemas Agrícolas, onde lidera o desenvolvimento de novas máquinas, equipamentos agrícolas, soluções tecnológicas e plataformas de dados geoespaciais para apoio à tomada de decisão no campo. É professor dos cursos de Ciência da Computação e Inteligência Artificial na Unimar e doutorando em Ciência da Computação pela Unicamp.",
+      "CTO and R&D Director at Grupo Orion Sistemas Agrícolas, where he leads the development of new machinery, agricultural equipment, technology solutions, and geospatial data platforms to support decision-making in the field. He is a professor in the Computer Science and Artificial Intelligence programs at Unimar and a PhD candidate in Computer Science at Unicamp.",
     ),
     socialCardAlt: text(
       "Matheus Ferraroni Sanches — CTO, professor e pesquisador em IA",
@@ -94,6 +94,11 @@ export const siteContent = Object.freeze({
     { id: "remote-sensing", label: text("Sensoriamento remoto", "Remote Sensing") },
     { id: "vehicular-networks", label: text("Redes veiculares", "Vehicular Networks") },
     { id: "wireless-communication", label: text("Comunicação sem fio", "Wireless Communication") },
+    { id: "research-and-development", label: text("Pesquisa e Desenvolvimento (P&D)", "Research and Development (R&D)") },
+    { id: "technological-innovation", label: text("Inovação tecnológica", "Technological Innovation") },
+    { id: "precision-agriculture", label: text("Agricultura de precisão", "Precision Agriculture") },
+    { id: "geospatial-data", label: text("Dados geoespaciais", "Geospatial Data") },
+    { id: "digital-transformation-agribusiness", label: text("Transformação digital no agronegócio", "Digital Transformation in Agribusiness") },
   ],
 
   links: {
@@ -117,13 +122,13 @@ export const siteContent = Object.freeze({
       {
         id: "orion-cto",
         role: text(
-          "Diretor de Tecnologia (CTO), Orion Sistemas Agrícolas",
-          "Chief Technology Officer (CTO), Orion Sistemas Agrícolas",
+          "Diretor de Tecnologia (CTO) e Diretor de P&D, Grupo Orion Sistemas Agrícolas",
+          "Chief Technology Officer (CTO) and R&D Director, Grupo Orion Sistemas Agrícolas",
         ),
         period: text("Jun/2025, atual", "Jun 2025–present"),
         description: text(
-          "Liderança das áreas de Tecnologia, Inovação e Pesquisa & Desenvolvimento, atuando na criação de novos produtos, máquinas agrícolas e plataformas digitais. Responsável pela estratégia tecnológica da empresa, abrangendo desenvolvimento de software, sistemas corporativos, infraestrutura, segurança da informação e transformação digital.",
-          "Leads Technology, Innovation, and Research & Development, contributing to the creation of new products, agricultural machinery, and digital platforms. He is responsible for the company’s technology strategy across software development, enterprise systems, infrastructure, information security, and digital transformation.",
+          "Responsável pelas diretorias de Tecnologia e Pesquisa & Desenvolvimento do Grupo Orion Sistemas Agrícolas. Lidera a estratégia tecnológica e o desenvolvimento de novas máquinas, equipamentos agrícolas, soluções tecnológicas e plataformas de dados geoespaciais para apoiar a tomada de decisão no campo, integrando software, sistemas corporativos, infraestrutura, segurança da informação e transformação digital.",
+          "Leads the Technology and Research & Development divisions at Grupo Orion Sistemas Agrícolas. He drives the technology strategy and the development of new machinery, agricultural equipment, technology solutions, and geospatial data platforms that support decision-making in the field, integrating software, enterprise systems, infrastructure, information security, and digital transformation.",
         ),
       },
       {
