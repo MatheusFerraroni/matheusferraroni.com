@@ -45,6 +45,37 @@ const pages = [
     toolsLabel: "Tools",
   },
 ];
+const analyticsConsentElementIds = [
+  "analytics-consent-banner",
+  "analytics-consent-accept",
+  "analytics-consent-reject",
+  "analytics-consent-privacy",
+  "privacy-footer-button",
+  "privacy-modal",
+  "privacy-modal-title",
+  "close-privacy-modal",
+  "privacy-status",
+  "privacy-allow",
+  "privacy-deny",
+  "privacy-contact-button",
+];
+const analyticsConsentButtonIds = [
+  "analytics-consent-accept",
+  "analytics-consent-reject",
+  "analytics-consent-privacy",
+  "privacy-footer-button",
+  "close-privacy-modal",
+  "privacy-allow",
+  "privacy-deny",
+  "privacy-contact-button",
+];
+const analyticsEvents = [
+  "outbound_link_click",
+  "contact_open",
+  "tools_open",
+  "language_change",
+  "flow_field_change",
+];
 
 function readRepositoryFile(relativePath) {
   return readFileSync(resolve(repositoryRoot, relativePath), "utf8");
@@ -67,6 +98,36 @@ function findTag(html, tagName, attributeName, attributeValue) {
   return tagsWithAttributes(html, tagName).find(
     (tag) => tag.attributes.get(attributeName) === attributeValue
   );
+}
+
+function findTagById(html, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = html.match(
+    new RegExp(`<([a-z][\\w:-]*)\\b[^>]*\\sid="${escapedId}"[^>]*>`, "i")
+  );
+
+  if (!match) {
+    return undefined;
+  }
+
+  return {
+    name: match[1].toLowerCase(),
+    source: match[0],
+    attributes: attributesFromTag(match[0]),
+  };
+}
+
+function textFromElementById(html, id) {
+  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = html.match(
+    new RegExp(
+      `<([a-z][\\w:-]*)\\b[^>]*\\sid="${escapedId}"[^>]*>([\\s\\S]*?)<\\/\\1>`,
+      "i"
+    )
+  );
+
+  assert.ok(match, `Element #${id} must have text content`);
+  return match[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function extractJsonLd(html) {
@@ -314,4 +375,228 @@ test("web manifest is valid and keeps icon paths relative to itself", () => {
   for (const icon of manifest.icons) {
     assert.ok(existsSync(resolve(manifestDirectory, icon.src)), `Missing manifest icon: ${icon.src}`);
   }
+});
+
+for (const page of pages) {
+  test(`${page.locale} exposes the localized analytics consent interface`, () => {
+    const html = readRepositoryFile(page.path);
+
+    for (const id of analyticsConsentElementIds) {
+      const occurrences = html.match(new RegExp(`\\sid="${id}"`, "g")) || [];
+      assert.equal(occurrences.length, 1, `${page.path} must expose #${id} exactly once`);
+      assert.ok(findTagById(html, id), `${page.path} must expose #${id}`);
+    }
+
+    for (const id of analyticsConsentButtonIds) {
+      const button = findTagById(html, id);
+      assert.equal(button?.name, "button", `#${id} must be a button`);
+      assert.equal(button?.attributes.get("type"), "button", `#${id} must not submit forms`);
+      assert.ok(textFromElementById(html, id), `#${id} must have a localized label`);
+    }
+
+    for (const id of ["analytics-consent-privacy", "privacy-footer-button"]) {
+      const trigger = findTagById(html, id);
+      assert.equal(trigger?.attributes.get("aria-haspopup"), "dialog");
+      assert.equal(trigger?.attributes.get("aria-controls"), "privacy-modal");
+    }
+
+    const privacyModal = findTagById(html, "privacy-modal");
+    assert.equal(privacyModal?.attributes.get("role"), "dialog");
+    assert.equal(privacyModal?.attributes.get("aria-modal"), "true");
+    assert.equal(privacyModal?.attributes.get("aria-hidden"), "true");
+    assert.equal(privacyModal?.attributes.get("aria-labelledby"), "privacy-modal-title");
+    assert.match(privacyModal?.source || "", /\binert(?:[\s=>]|$)/);
+
+    const contactTrigger = findTagById(html, "privacy-contact-button");
+    assert.equal(contactTrigger?.attributes.get("aria-haspopup"), "dialog");
+    assert.equal(contactTrigger?.attributes.get("aria-controls"), "contact-modal");
+
+    assert.ok(textFromElementById(html, "analytics-consent-banner"));
+    assert.ok(textFromElementById(html, "privacy-modal-title"));
+    assert.ok(textFromElementById(html, "privacy-status"));
+    assert.match(
+      html,
+      /<footer\b[\s\S]*\sid="privacy-footer-button"[\s\S]*<\/footer>/,
+      "Privacy settings must remain reachable from the footer"
+    );
+
+    const sourcedScripts = tagsWithAttributes(html, "script").filter((tag) =>
+      tag.attributes.has("src")
+    );
+    const siteScripts = sourcedScripts.filter((tag) =>
+      /(?:^|\/)assets\/js\/site\.js$/.test(tag.attributes.get("src"))
+    );
+
+    assert.equal(siteScripts.length, 1, `${page.path} must load the local site.js once`);
+    assert.ok(
+      sourcedScripts.every((tag) => /^(?:\.\.\/|\.\/)/.test(tag.attributes.get("src"))),
+      `${page.path} must only load local scripts`
+    );
+    assert.doesNotMatch(html, /googletagmanager\.com|google-analytics\.com/i);
+  });
+}
+
+test("analytics consent copy and controls are localized in PT-BR and English", () => {
+  const portugueseHtml = readRepositoryFile("index.html");
+  const englishHtml = readRepositoryFile("en/index.html");
+  const localizedElementIds = [
+    "analytics-consent-banner",
+    "analytics-consent-accept",
+    "analytics-consent-reject",
+    "analytics-consent-privacy",
+    "privacy-footer-button",
+    "privacy-modal-title",
+    "close-privacy-modal",
+    "privacy-status",
+    "privacy-allow",
+    "privacy-deny",
+    "privacy-contact-button",
+  ];
+
+  assert.match(
+    textFromElementById(portugueseHtml, "analytics-consent-banner"),
+    /Usamos o Google Analytics para medir visitas e melhorar o site\./
+  );
+  assert.match(
+    textFromElementById(englishHtml, "analytics-consent-banner"),
+    /Google Analytics/i
+  );
+
+  for (const id of localizedElementIds) {
+    const portugueseText = textFromElementById(portugueseHtml, id);
+    const englishText = textFromElementById(englishHtml, id);
+
+    assert.ok(portugueseText, `PT-BR #${id} must not be empty`);
+    assert.ok(englishText, `EN #${id} must not be empty`);
+    assert.notEqual(englishText, portugueseText, `#${id} must be localized`);
+  }
+});
+
+test("tracked outbound links expose opaque analytics identifiers only", () => {
+  const untrackedConsentIds = [
+    "analytics-consent-accept",
+    "analytics-consent-reject",
+    "analytics-consent-privacy",
+    "privacy-footer-button",
+    "privacy-allow",
+    "privacy-deny",
+  ];
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    const trackedLinks = tagsWithAttributes(html, "a").filter(
+      (tag) =>
+        tag.attributes.has("data-analytics-id") ||
+        tag.attributes.has("data-analytics-group")
+    );
+
+    assert.ok(trackedLinks.length > 0, `${page.path} must expose tracked links`);
+
+    for (const link of trackedLinks) {
+      const targetId = link.attributes.get("data-analytics-id");
+      const targetGroup = link.attributes.get("data-analytics-group");
+
+      assert.ok(targetId, `Tracked link ${link.attributes.get("href")} needs data-analytics-id`);
+      assert.ok(
+        targetGroup,
+        `Tracked link ${link.attributes.get("href")} needs data-analytics-group`
+      );
+      assert.match(targetId, /^[A-Za-z0-9][A-Za-z0-9_-]*$/);
+      assert.match(targetGroup, /^[A-Za-z0-9][A-Za-z0-9_-]*$/);
+      assert.doesNotMatch(targetId, /(?:https?:|\/|\?|@|\s)/i);
+      assert.doesNotMatch(targetGroup, /(?:https?:|\/|\?|@|\s)/i);
+    }
+
+    const trackedGroups = new Set(
+      trackedLinks.map((link) => link.attributes.get("data-analytics-group"))
+    );
+    for (const expectedGroup of ["professional-profile", "publication", "project", "tool"]) {
+      assert.ok(trackedGroups.has(expectedGroup), `${page.path} must track ${expectedGroup} links`);
+    }
+
+    for (const id of untrackedConsentIds) {
+      const control = findTagById(html, id);
+      assert.ok(!control?.attributes.has("data-analytics-id"));
+      assert.ok(!control?.attributes.has("data-analytics-group"));
+    }
+  }
+});
+
+test("site script implements consent-gated GA4 with the approved event contract", () => {
+  const siteScript = readRepositoryFile("assets/js/site.js");
+
+  assert.match(siteScript, /G-RSJNZZF2XW/);
+  assert.match(siteScript, /personal-website:analytics-consent:v1/);
+  assert.match(siteScript, /googletagmanager\.com\/gtag\/js/);
+  assert.equal((siteScript.match(/googletagmanager\.com\/gtag\/js/g) || []).length, 1);
+  assert.equal((siteScript.match(/createElement\(["']script["']\)/g) || []).length, 1);
+  assert.match(siteScript, /localStorage\.getItem/);
+  assert.match(siteScript, /localStorage\.setItem/);
+  assert.match(siteScript, /JSON\.parse/);
+  assert.match(siteScript, /JSON\.stringify/);
+  assert.match(siteScript, /updatedAt/);
+  assert.match(siteScript, /hasValidConsentTimestamp/);
+  assert.match(siteScript, /parsedTimestamp\.toISOString\(\)\s*===\s*value/);
+  assert.match(siteScript, /document\.cookie/);
+  assert.match(siteScript, /startsWith\(["']_ga["']\)/);
+  assert.match(siteScript, /location\.reload\(\)/);
+
+  assert.match(siteScript, /["']?analytics_storage["']?\s*:\s*["']denied["']/);
+  assert.match(siteScript, /["']?analytics_storage["']?\s*:\s*["']granted["']/);
+  for (const deniedField of [
+    "ad_storage",
+    "ad_user_data",
+    "ad_personalization",
+    "functionality_storage",
+    "personalization_storage",
+    "security_storage",
+  ]) {
+    assert.match(
+      siteScript,
+      new RegExp(`["']?${deniedField}["']?\\s*:\\s*["']denied["']`),
+      `${deniedField} must remain denied`
+    );
+  }
+  assert.match(siteScript, /["']?allow_google_signals["']?\s*:\s*false/);
+  assert.match(siteScript, /["']?allow_ad_personalization_signals["']?\s*:\s*false/);
+  assert.match(siteScript, /["']?send_page_view["']?\s*:\s*false/);
+  assert.match(
+    siteScript,
+    /["']?page_location["']?\s*:\s*`\$\{window\.location\.origin\}\$\{window\.location\.pathname\}`/
+  );
+  assert.match(siteScript, /["']?page_referrer["']?\s*:\s*["']["']/);
+  assert.match(siteScript, /["']event["']\s*,\s*["']page_view["']/);
+  assert.match(siteScript, /["']consent["']\s*,\s*["']default["']/);
+  assert.match(siteScript, /["']consent["']\s*,\s*["']update["']/);
+
+  assert.match(siteScript, /dataset\.analyticsId|getAttribute\(["']data-analytics-id["']\)/);
+  assert.match(siteScript, /dataset\.analyticsGroup|getAttribute\(["']data-analytics-group["']\)/);
+  assert.match(siteScript, /document\.documentElement\.lang|document\.body\.dataset\.pageLanguage/);
+  assert.match(siteScript, /event_callback/);
+  assert.match(siteScript, /setTimeout/);
+  assert.match(siteScript, /\.checked/);
+
+  for (const eventName of analyticsEvents) {
+    assert.match(siteScript, new RegExp(`["']${eventName}["']`));
+  }
+  for (const parameterName of [
+    "target_id",
+    "target_group",
+    "page_language",
+    "target_language",
+    "enabled",
+  ]) {
+    assert.match(siteScript, new RegExp(`\\b${parameterName}\\b`));
+  }
+
+  assert.doesNotMatch(
+    siteScript,
+    /\b(?:email|href|url|link_url|link_text|search|query)\s*:/i,
+    "Analytics payloads must not expose URLs, free text, email, or query data"
+  );
+  assert.match(
+    siteScript,
+    /(?:getElementById|querySelector)\([^)]*(?:script|gtag\.js|google-analytics-script)[^)]*\)|\b(?:analytics|gtag|googleAnalytics)\w*(?:Loaded|Loading|Requested|Promise)\b/i,
+    "The GA script loader must have an idempotency guard"
+  );
 });

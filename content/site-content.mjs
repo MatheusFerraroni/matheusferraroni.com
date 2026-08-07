@@ -73,6 +73,54 @@ export const siteContent = Object.freeze({
     work: text("Trabalho", "Paper"),
   },
 
+  privacy: {
+    bannerLabel: text("Preferências de privacidade", "Privacy preferences"),
+    bannerText: text(
+      "Usamos o Google Analytics para medir visitas e melhorar o site. Ele só será ativado se você aceitar.",
+      "We use Google Analytics to measure visits and improve the site. It will only be enabled if you accept.",
+    ),
+    accept: text("Aceitar", "Accept"),
+    reject: text("Recusar", "Reject"),
+    privacy: text("Privacidade", "Privacy"),
+    modalEyebrow: text("Dados e preferências", "Data and preferences"),
+    modalTitle: text("Privacidade e Analytics", "Privacy and Analytics"),
+    introduction: text(
+      "Com sua permissão, usamos o Google Analytics 4 para medir visitas e melhorar este site.",
+      "With your permission, we use Google Analytics 4 to measure visits and improve this site.",
+    ),
+    collectedData: text(
+      "O Google pode receber páginas visitadas, dados de sessão, localização aproximada, informações do navegador e dispositivo e eventos de interação com o site.",
+      "Google may receive visited pages, session data, approximate location, browser and device information, and site interaction events.",
+    ),
+    retention: text(
+      "Após o aceite, o Analytics pode gravar cookies _ga por até dois anos. Os dados detalhados de usuários e eventos ficam retidos por 14 meses.",
+      "After acceptance, Analytics may store _ga cookies for up to two years. Detailed user and event data is retained for 14 months.",
+    ),
+    safeguards: text(
+      "Não usamos Google Ads, Google Signals, User-ID ou personalização publicitária, nem enviamos nome, e-mail, texto livre ou conteúdo de contato.",
+      "We do not use Google Ads, Google Signals, User-ID, or advertising personalization, and we do not send names, email addresses, free-form text, or contact content.",
+    ),
+    controller: text(
+      "Controlador: Matheus Ferraroni Sanches. Para exercer seus direitos, use o contato deste site.",
+      "Controller: Matheus Ferraroni Sanches. To exercise your rights, use this site's contact option.",
+    ),
+    choiceStorage: text(
+      "Sua escolha é guardada neste navegador e pode ser alterada a qualquer momento.",
+      "Your choice is stored in this browser and can be changed at any time.",
+    ),
+    googleInformation: text(
+      "Como o Google usa essas informações",
+      "How Google uses this information",
+    ),
+    contact: text("Abrir contato", "Open contact"),
+    currentStatus: text("Estado atual:", "Current status:"),
+    statusUndecided: text("não definido", "not set"),
+    statusGranted: text("Analytics permitido", "Analytics allowed"),
+    statusDenied: text("Analytics não permitido", "Analytics not allowed"),
+    allowAnalytics: text("Permitir Analytics", "Allow Analytics"),
+    denyAnalytics: text("Não permitir Analytics", "Do not allow Analytics"),
+  },
+
   sectionTitles: {
     experience: text("Histórico profissional", "Professional experience"),
     education: text("Histórico acadêmico", "Education"),

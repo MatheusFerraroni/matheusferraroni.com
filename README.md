@@ -55,8 +55,20 @@ Depois de publicar uma alteração estrutural:
 4. Envie `https://matheusferraroni.com/sitemap.xml`.
 5. Inspecione e solicite indexação de `/` e `/en/`.
 
-O site não inclui Google Analytics, cookies de rastreamento ou redirecionamento
-automático por idioma.
+O site usa o Google Analytics 4 somente após consentimento explícito. Antes do
+aceite, a tag externa não é carregada e nenhuma medição é enviada ao Google. A
+preferência pode ser recusada ou revogada pelo modal acessível de privacidade no
+rodapé; o conteúdo equivalente é renderizado em português e inglês.
+
+A implementação mede visualizações e interações identificadas por valores fixos,
+sem enviar texto livre, e-mail ou parâmetros de consulta. O código mantém os
+consentimentos de anúncios negados, desativa Google Signals e personalização
+publicitária e não define User-ID.
+
+Antes da publicação, confirme no painel do GA4 que a **medição aprimorada está
+desativada** e que a **retenção de dados de usuários e eventos está em 14 meses**.
+Essas duas opções pertencem à propriedade/ao fluxo de dados e não podem ser
+impostas pelo código deste repositório.
 
 ## Publicação
 

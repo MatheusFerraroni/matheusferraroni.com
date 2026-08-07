@@ -48,6 +48,9 @@ const languageAttribute = (contentLanguage, pageLocale) =>
 
 const externalLinkAttributes = ' target="_blank" rel="noopener noreferrer"';
 
+const analyticsAttributes = (id, group) =>
+  ` data-analytics-id="${escapeHtml(id)}" data-analytics-group="${escapeHtml(group)}"`;
+
 const renderLanguageNavigation = (locale) => {
   const isPortuguese = locale === "pt-BR";
   const activeClass = "font-semibold text-white underline decoration-sky-300/80 underline-offset-4";
@@ -55,9 +58,9 @@ const renderLanguageNavigation = (locale) => {
 
   return `
         <nav class="flex items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs uppercase tracking-[0.18em] backdrop-blur-md" aria-label="${text(siteContent.ui.languageNavigation, locale)}">
-          <a class="${isPortuguese ? activeClass : inactiveClass}" href="/" hreflang="pt-BR" lang="pt-BR"${isPortuguese ? ' aria-current="page"' : ""}>${escapeHtml(siteContent.ui.portuguese)}</a>
+          <a class="${isPortuguese ? activeClass : inactiveClass}" href="/" hreflang="pt-BR" lang="pt-BR"${analyticsAttributes("pt-BR", "language")}${isPortuguese ? ' aria-current="page"' : ""}>${escapeHtml(siteContent.ui.portuguese)}</a>
           <span class="text-slate-500" aria-hidden="true">|</span>
-          <a class="${isPortuguese ? inactiveClass : activeClass}" href="/en/" hreflang="en" lang="en"${isPortuguese ? "" : ' aria-current="page"'}>${escapeHtml(siteContent.ui.english)}</a>
+          <a class="${isPortuguese ? inactiveClass : activeClass}" href="/en/" hreflang="en" lang="en"${analyticsAttributes("en", "language")}${isPortuguese ? "" : ' aria-current="page"'}>${escapeHtml(siteContent.ui.english)}</a>
         </nav>`;
 };
 
@@ -75,7 +78,7 @@ const renderQuickLinks = (locale) =>
   siteContent.quickLinks
     .map(
       (link) => `
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links[link.linkKey])}"${externalLinkAttributes}>${text(link.label, locale)}</a>`,
+              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links[link.linkKey])}"${analyticsAttributes(link.id, "professional-profile")}${externalLinkAttributes}>${text(link.label, locale)}</a>`,
     )
     .join("");
 
@@ -83,7 +86,7 @@ const renderToolLinks = () =>
   siteContent.tools
     .map(
       (tool) => `
-          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links[tool.linkKey])}" id="tool-${escapeHtml(tool.id)}"${externalLinkAttributes}>${escapeHtml(tool.label)}</a>`,
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links[tool.linkKey])}" id="tool-${escapeHtml(tool.id)}"${analyticsAttributes(tool.id, "tool")}${externalLinkAttributes}>${escapeHtml(tool.label)}</a>`,
     )
     .join("");
 
@@ -144,9 +147,9 @@ const renderSkillGroups = (locale) =>
     .join("");
 
 const renderPublicationLinks = () => `
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.scholar)}"${externalLinkAttributes}>Google Scholar</a>
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.lattes)}"${externalLinkAttributes}>Lattes</a>
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.dblp)}"${externalLinkAttributes}>DBLP</a>`;
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.scholar)}"${analyticsAttributes("google-scholar", "professional-profile")}${externalLinkAttributes}>Google Scholar</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.lattes)}"${analyticsAttributes("lattes", "professional-profile")}${externalLinkAttributes}>Lattes</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="${escapeHtml(siteContent.links.dblp)}"${analyticsAttributes("dblp", "professional-profile")}${externalLinkAttributes}>DBLP</a>`;
 
 const renderPublications = (locale) =>
   siteContent.publications
@@ -162,7 +165,7 @@ const renderPublications = (locale) =>
                   <p class="mt-2">${escapeHtml(publication.venue)}${publication.description ? `. ${text(publication.description, locale)}` : ""}</p>${
                     publication.link
                       ? `
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="${escapeHtml(publication.link.url)}"${externalLinkAttributes}>${escapeHtml(publication.link.label)}</a>`
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="${escapeHtml(publication.link.url)}"${analyticsAttributes(publication.id, "publication")}${externalLinkAttributes}>${escapeHtml(publication.link.label)}</a>`
                       : ""
                   }
                 </div>`,
@@ -190,8 +193,8 @@ const renderProjects = (locale) =>
                   ? `
               <div class="mt-3 flex flex-wrap gap-3">${project.links
                 .map(
-                  (link) => `
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="${escapeHtml(link.url)}"${externalLinkAttributes}>${link.kind === "repository" ? text(siteContent.ui.repository, locale) : escapeHtml(link.label)}</a>`,
+                  (link, linkIndex) => `
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="${escapeHtml(link.url)}"${analyticsAttributes(`${project.id}-${link.kind ?? `link-${linkIndex + 1}`}`, "project")}${externalLinkAttributes}>${link.kind === "repository" ? text(siteContent.ui.repository, locale) : escapeHtml(link.label)}</a>`,
                 )
                 .join("")}
               </div>`
@@ -340,14 +343,14 @@ export const renderPage = (locale) => {
 ${structuredData}
     </script>
   </head>
-  <body>
+  <body data-page-language="${escapeHtml(locale)}">
     <div class="canvas-layer" id="sketch-root" aria-hidden="true"></div>
 
     <main class="relative z-10 min-h-screen">
       <div class="mx-auto flex w-full max-w-7xl flex-col items-stretch gap-3 px-6 pt-4 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-16">
 ${renderLanguageNavigation(locale)}
         <label class="z-20 flex items-center justify-center gap-3 rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.24em] text-slate-100 backdrop-blur-md sm:justify-start">
-          <input id="toggle-flow-field" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-transparent accent-sky-300">
+          <input id="toggle-flow-field" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-transparent accent-sky-300"${analyticsAttributes("flow-field", "preference")}>
           <span>${text(siteContent.ui.flowField, locale)}</span>
         </label>
       </div>
@@ -361,12 +364,12 @@ ${renderLanguageNavigation(locale)}
             </div>
           </div>
 
-          <aside class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8">
+          <aside class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8" aria-label="${text(siteContent.ui.quickAccess, locale)}">
             <p class="mb-4 text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">${text(siteContent.ui.quickAccess, locale)}</p>
             <div class="grid gap-3 text-sm leading-6 text-slate-200">${renderQuickLinks(locale)}
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="#" id="linkedin-link" aria-disabled="true" data-disabled-message="${text(siteContent.ui.linkedinUnavailable, locale)}" title="${text(siteContent.ui.linkedinUnavailable, locale)}">LinkedIn</a>
-              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal">${text(siteContent.ui.tools, locale)}</button>
-              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button">${text(siteContent.ui.contact, locale)}</button>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal"${analyticsAttributes("tools", "modal")}>${text(siteContent.ui.tools, locale)}</button>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button" aria-haspopup="dialog" aria-controls="contact-modal"${analyticsAttributes("contact", "modal")}>${text(siteContent.ui.contact, locale)}</button>
             </div>
           </aside>
         </div>
@@ -422,6 +425,21 @@ ${renderLanguageNavigation(locale)}
       </section>
     </main>
 
+    <footer class="relative z-10 mx-auto flex w-full max-w-7xl justify-center px-6 pb-10 sm:px-10 lg:px-16">
+      <button class="rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white" id="privacy-footer-button" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">${text(siteContent.privacy.privacy, locale)}</button>
+    </footer>
+
+    <aside class="fixed inset-x-0 bottom-0 z-20 hidden border-t border-white/10 bg-slate-950/95 px-4 py-4 shadow-2xl shadow-slate-950/70 backdrop-blur-md sm:px-6" id="analytics-consent-banner" aria-label="${text(siteContent.privacy.bannerLabel, locale)}" aria-hidden="true" inert>
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="max-w-3xl text-sm leading-6 text-slate-200">${text(siteContent.privacy.bannerText, locale)}</p>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-reject" type="button">${text(siteContent.privacy.reject, locale)}</button>
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">${text(siteContent.privacy.privacy, locale)}</button>
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-accept" type="button">${text(siteContent.privacy.accept, locale)}</button>
+        </div>
+      </div>
+    </aside>
+
     <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="tools-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tools-modal-title" inert>
       <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
         <div class="flex items-start justify-between gap-4">
@@ -447,6 +465,33 @@ ${renderLanguageNavigation(locale)}
         </div>
         <div class="mt-6">
           <img class="h-auto max-w-full rounded-xl border border-white/10 bg-white/5 p-3" src="${settings.assetBase}/image/email_white.png" alt="${text(siteContent.ui.contactEmailAlt, locale)}">
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed inset-0 z-30 hidden items-center justify-center overflow-y-auto bg-slate-950/75 px-4 py-6 backdrop-blur-sm sm:px-6" id="privacy-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="privacy-modal-title" inert>
+      <div class="my-auto max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">${text(siteContent.privacy.modalEyebrow, locale)}</p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white" id="privacy-modal-title">${text(siteContent.privacy.modalTitle, locale)}</h2>
+          </div>
+          <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 transition hover:bg-white/10" id="close-privacy-modal" type="button">${text(siteContent.ui.close, locale)}</button>
+        </div>
+        <div class="mt-6 space-y-4 text-sm leading-7 text-slate-300 sm:text-base">
+          <p>${text(siteContent.privacy.introduction, locale)}</p>
+          <p>${text(siteContent.privacy.collectedData, locale)}</p>
+          <p>${text(siteContent.privacy.retention, locale)}</p>
+          <p>${text(siteContent.privacy.safeguards, locale)}</p>
+          <p>${text(siteContent.privacy.controller, locale)}</p>
+          <p>${text(siteContent.privacy.choiceStorage, locale)}</p>
+          <p><a class="text-sky-200 underline decoration-sky-300/60 underline-offset-4 transition hover:text-sky-100" href="https://policies.google.com/technologies/partner-sites?hl=${locale === "pt-BR" ? "pt-BR" : "en"}" target="_blank" rel="noopener noreferrer">${text(siteContent.privacy.googleInformation, locale)}</a></p>
+        </div>
+        <p class="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200" id="privacy-status" data-status-undecided="${text(siteContent.privacy.statusUndecided, locale)}" data-status-granted="${text(siteContent.privacy.statusGranted, locale)}" data-status-denied="${text(siteContent.privacy.statusDenied, locale)}" aria-live="polite">${text(siteContent.privacy.currentStatus, locale)} <span>${text(siteContent.privacy.statusUndecided, locale)}</span></p>
+        <div class="mt-6 grid gap-3 sm:grid-cols-3">
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-3 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="privacy-deny" type="button">${text(siteContent.privacy.denyAnalytics, locale)}</button>
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="privacy-contact-button" type="button" aria-haspopup="dialog" aria-controls="contact-modal">${text(siteContent.privacy.contact, locale)}</button>
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-3 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="privacy-allow" type="button">${text(siteContent.privacy.allowAnalytics, locale)}</button>
         </div>
       </div>
     </div>

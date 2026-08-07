@@ -122,19 +122,19 @@
 }
     </script>
   </head>
-  <body>
+  <body data-page-language="en">
     <div class="canvas-layer" id="sketch-root" aria-hidden="true"></div>
 
     <main class="relative z-10 min-h-screen">
       <div class="mx-auto flex w-full max-w-7xl flex-col items-stretch gap-3 px-6 pt-4 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-16">
 
         <nav class="flex items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs uppercase tracking-[0.18em] backdrop-blur-md" aria-label="Language selection">
-          <a class="text-slate-300 transition hover:text-white" href="/" hreflang="pt-BR" lang="pt-BR">Português</a>
+          <a class="text-slate-300 transition hover:text-white" href="/" hreflang="pt-BR" lang="pt-BR" data-analytics-id="pt-BR" data-analytics-group="language">Português</a>
           <span class="text-slate-500" aria-hidden="true">|</span>
-          <a class="font-semibold text-white underline decoration-sky-300/80 underline-offset-4" href="/en/" hreflang="en" lang="en" aria-current="page">English</a>
+          <a class="font-semibold text-white underline decoration-sky-300/80 underline-offset-4" href="/en/" hreflang="en" lang="en" data-analytics-id="en" data-analytics-group="language" aria-current="page">English</a>
         </nav>
         <label class="z-20 flex items-center justify-center gap-3 rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.24em] text-slate-100 backdrop-blur-md sm:justify-start">
-          <input id="toggle-flow-field" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-transparent accent-sky-300">
+          <input id="toggle-flow-field" type="checkbox" class="h-4 w-4 rounded border-white/20 bg-transparent accent-sky-300" data-analytics-id="flow-field" data-analytics-group="preference">
           <span>Flow field</span>
         </label>
       </div>
@@ -187,15 +187,15 @@
             </div>
           </div>
 
-          <aside class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8">
+          <aside class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8" aria-label="Quick access">
             <p class="mb-4 text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">Quick access</p>
             <div class="grid gap-3 text-sm leading-6 text-slate-200">
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="http://lattes.cnpq.br/7066133969704063" target="_blank" rel="noopener noreferrer">Lattes</a>
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://scholar.google.com/citations?hl=pt-BR&amp;user=ZCrxyHUAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://github.com/MatheusFerraroni" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="http://lattes.cnpq.br/7066133969704063" data-analytics-id="lattes" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">Lattes</a>
+              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://scholar.google.com/citations?hl=pt-BR&amp;user=ZCrxyHUAAAAJ" data-analytics-id="google-scholar" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://github.com/MatheusFerraroni" data-analytics-id="github" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">GitHub</a>
               <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="#" id="linkedin-link" aria-disabled="true" data-disabled-message="LinkedIn temporarily unavailable" title="LinkedIn temporarily unavailable">LinkedIn</a>
-              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal">Tools</button>
-              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button">Contact</button>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal" data-analytics-id="tools" data-analytics-group="modal">Tools</button>
+              <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button" aria-haspopup="dialog" aria-controls="contact-modal" data-analytics-id="contact" data-analytics-group="modal">Contact</button>
             </div>
           </aside>
         </div>
@@ -289,9 +289,9 @@
         <article id="publications" class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8">
           <h2 class="text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Selected publications</h2>
           <div class="mt-6 flex flex-wrap gap-3">
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="https://scholar.google.com/citations?hl=pt-BR&amp;user=ZCrxyHUAAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="http://lattes.cnpq.br/7066133969704063" target="_blank" rel="noopener noreferrer">Lattes</a>
-            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="https://dblp.org/pid/165/3906.html" target="_blank" rel="noopener noreferrer">DBLP</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="https://scholar.google.com/citations?hl=pt-BR&amp;user=ZCrxyHUAAAAJ" data-analytics-id="google-scholar" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="http://lattes.cnpq.br/7066133969704063" data-analytics-id="lattes" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">Lattes</a>
+            <a class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-sky-200 transition hover:bg-white/8 hover:text-sky-100" href="https://dblp.org/pid/165/3906.html" data-analytics-id="dblp" data-analytics-group="professional-profile" target="_blank" rel="noopener noreferrer">DBLP</a>
           </div>
           <div class="mt-6 space-y-8 text-sm leading-7 text-slate-300 sm:text-base">
             <section id="publications-2023">
@@ -300,12 +300,12 @@
                 <div id="publication-conversation-flows">
                   <h3 class="text-lg font-semibold text-white">Automatic Extraction of Conversation Flows from Human Dialogues: Understanding Their Impact to Refine NLP Models</h3>
                   <p class="mt-2">SN Computer Science. Research on automatically extracting conversation flows from human dialogues to refine natural language processing models.</p>
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://doi.org/10.1007/s42979-023-02148-7" target="_blank" rel="noopener noreferrer">DOI: 10.1007/s42979-023-02148-7</a>
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://doi.org/10.1007/s42979-023-02148-7" data-analytics-id="conversation-flows" data-analytics-group="publication" target="_blank" rel="noopener noreferrer">DOI: 10.1007/s42979-023-02148-7</a>
                 </div>
                 <div id="publication-curricular-transfer-learning">
                   <h3 class="text-lg font-semibold text-white">Curricular Transfer Learning for Sentence Encoded Tasks</h3>
                   <p class="mt-2">arXiv. Study of curriculum learning for gradual adaptation between distributions in sentence-encoded tasks.</p>
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://arxiv.org/abs/2308.01849" target="_blank" rel="noopener noreferrer">arXiv: 2308.01849</a>
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://arxiv.org/abs/2308.01849" data-analytics-id="curricular-transfer-learning" data-analytics-group="publication" target="_blank" rel="noopener noreferrer">arXiv: 2308.01849</a>
                 </div>
               </div>
             </section>
@@ -315,12 +315,12 @@
                 <div id="publication-mccd">
                   <h3 class="text-lg font-semibold text-white">MCCD: Generating Human Natural Language Conversational Datasets</h3>
                   <p class="mt-2">ICEIS 2022. A methodology for generating multi-turn, multi-user conversational datasets from online forums.</p>
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://doi.org/10.5220/0011077400003179" target="_blank" rel="noopener noreferrer">DOI: 10.5220/0011077400003179</a>
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://doi.org/10.5220/0011077400003179" data-analytics-id="mccd" data-analytics-group="publication" target="_blank" rel="noopener noreferrer">DOI: 10.5220/0011077400003179</a>
                 </div>
                 <div id="publication-portuguese-brazilian-datasets">
                   <h3 class="text-lg font-semibold text-white">Textual Datasets For Portuguese-Brazilian Language Models</h3>
                   <p class="mt-2">Dataset Showcase Workshop, SBC. Presentation of textual datasets for Brazilian Portuguese language models.</p>
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://sol.sbc.org.br/index.php/dsw/article/view/21907" target="_blank" rel="noopener noreferrer">DOI: 10.5753/dsw.2022.224294</a>
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://sol.sbc.org.br/index.php/dsw/article/view/21907" data-analytics-id="portuguese-brazilian-datasets" data-analytics-group="publication" target="_blank" rel="noopener noreferrer">DOI: 10.5753/dsw.2022.224294</a>
                 </div>
               </div>
             </section>
@@ -339,7 +339,7 @@
                 <div id="publication-rp-sim-paper">
                   <h3 class="text-lg font-semibold text-white">RP-Sim: Radio Propagation Simulator</h3>
                   <p class="mt-2">SBRC Companion 2020</p>
-                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://sol.sbc.org.br/index.php/sbrc_estendido/article/view/12395" target="_blank" rel="noopener noreferrer">DOI: 10.5753/sbrc_estendido.2020.12395</a>
+                  <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="https://sol.sbc.org.br/index.php/sbrc_estendido/article/view/12395" data-analytics-id="rp-sim-paper" data-analytics-group="publication" target="_blank" rel="noopener noreferrer">DOI: 10.5753/sbrc_estendido.2020.12395</a>
                 </div>
               </div>
             </section>
@@ -355,8 +355,8 @@
               <p class="mt-3 text-sm leading-7 text-slate-300">An open-source environment for simulating wireless communication propagation, with support for propagation models, RSSI, BER, communication-area export, and an interactive demo.</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">Technologies: JavaScript, p5.js, Mappa.js.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/RP-Sim" target="_blank" rel="noopener noreferrer">Repository</a>
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://matheusferraroni.github.io/RP-Sim/" target="_blank" rel="noopener noreferrer">Demo</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/RP-Sim" data-analytics-id="rp-sim-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://matheusferraroni.github.io/RP-Sim/" data-analytics-id="rp-sim-link-2" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Demo</a>
               </div>
             </div>
             <div id="project-mccd" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -364,7 +364,7 @@
               <p class="mt-1 text-sm text-sky-200/80">Conversational methodology and datasets</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">A methodology for generating natural conversational datasets from online forums and other sources of human dialogue.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/MCCD" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/MCCD" data-analytics-id="mccd-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
               </div>
             </div>
             <div id="project-miner-xenforo" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -373,7 +373,7 @@
               <p class="mt-3 text-sm leading-7 text-slate-300">A tool for extracting and preparing conversational data from forums for use in natural language processing datasets.</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">Technologies: Python.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/miner-xenforo" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/miner-xenforo" data-analytics-id="miner-xenforo-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
               </div>
             </div>
             <div id="project-portuguese-nlp-dataset" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -381,7 +381,7 @@
               <p class="mt-1 text-sm text-sky-200/80">Datasets for natural language processing in Portuguese</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">A collection of new or adapted datasets for training Portuguese-language models.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/nlp_ptbr_datasets" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/nlp_ptbr_datasets" data-analytics-id="portuguese-nlp-dataset-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
               </div>
             </div>
             <div id="project-gga" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -389,7 +389,7 @@
               <p class="mt-1 text-sm text-sky-200/80">Python library for genetic algorithms</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">An open-source library that simplifies the creation and customization of genetic algorithms in Python.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/GGA" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/GGA" data-analytics-id="gga-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
               </div>
             </div>
             <div id="project-msim" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -398,7 +398,7 @@
               <p class="mt-3 text-sm leading-7 text-slate-300">A simple event simulator written in Python.</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">Technologies: Python.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/Msim" target="_blank" rel="noopener noreferrer">Repository</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://github.com/MatheusFerraroni/Msim" data-analytics-id="msim-repository" data-analytics-group="project" target="_blank" rel="noopener noreferrer">Repository</a>
               </div>
             </div>
             <div id="project-satellite-image-processing" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -412,7 +412,7 @@
               <p class="mt-1 text-sm text-sky-200/80">FAPESP project</p>
               <p class="mt-3 text-sm leading-7 text-slate-300">A project focused on automatically updating educational content through opportunistic networks in schools with limited or no internet access.</p>
               <div class="mt-3 flex flex-wrap gap-3">
-                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://bv.fapesp.br/pt/pesquisador/702639/matheus-ferraroni-sanches/" target="_blank" rel="noopener noreferrer">BV FAPESP</a>
+                <a class="text-sm text-sky-200 transition hover:text-sky-100" href="https://bv.fapesp.br/pt/pesquisador/702639/matheus-ferraroni-sanches/" data-analytics-id="sco3-link-1" data-analytics-group="project" target="_blank" rel="noopener noreferrer">BV FAPESP</a>
               </div>
             </div>
           </div>
@@ -444,6 +444,21 @@
       </section>
     </main>
 
+    <footer class="relative z-10 mx-auto flex w-full max-w-7xl justify-center px-6 pb-10 sm:px-10 lg:px-16">
+      <button class="rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white" id="privacy-footer-button" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacy</button>
+    </footer>
+
+    <aside class="fixed inset-x-0 bottom-0 z-20 hidden border-t border-white/10 bg-slate-950/95 px-4 py-4 shadow-2xl shadow-slate-950/70 backdrop-blur-md sm:px-6" id="analytics-consent-banner" aria-label="Privacy preferences" aria-hidden="true" inert>
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="max-w-3xl text-sm leading-6 text-slate-200">We use Google Analytics to measure visits and improve the site. It will only be enabled if you accept.</p>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-reject" type="button">Reject</button>
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacy</button>
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-accept" type="button">Accept</button>
+        </div>
+      </div>
+    </aside>
+
     <div class="fixed inset-0 z-30 hidden items-center justify-center bg-slate-950/75 px-6 backdrop-blur-sm" id="tools-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tools-modal-title" inert>
       <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
         <div class="flex items-start justify-between gap-4">
@@ -454,8 +469,8 @@
           <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 transition hover:bg-white/10" id="close-tools-modal" type="button">Close</button>
         </div>
         <div class="mt-6 grid gap-3 text-sm leading-6 text-slate-200">
-          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://matheusferraroni.github.io/visual_algo/" id="tool-visual-algorithms" target="_blank" rel="noopener noreferrer">Algoritmos Visuais</a>
-          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://www.mapadasparcelas.com.br/" id="tool-field-map" target="_blank" rel="noopener noreferrer">Mapa das Parcelas</a>
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://matheusferraroni.github.io/visual_algo/" id="tool-visual-algorithms" data-analytics-id="visual-algorithms" data-analytics-group="tool" target="_blank" rel="noopener noreferrer">Algoritmos Visuais</a>
+          <a class="block rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="https://www.mapadasparcelas.com.br/" id="tool-field-map" data-analytics-id="field-map" data-analytics-group="tool" target="_blank" rel="noopener noreferrer">Mapa das Parcelas</a>
         </div>
       </div>
     </div>
@@ -471,6 +486,33 @@
         </div>
         <div class="mt-6">
           <img class="h-auto max-w-full rounded-xl border border-white/10 bg-white/5 p-3" src="../assets/image/email_white.png" alt="Contact email address">
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed inset-0 z-30 hidden items-center justify-center overflow-y-auto bg-slate-950/75 px-4 py-6 backdrop-blur-sm sm:px-6" id="privacy-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="privacy-modal-title" inert>
+      <div class="my-auto max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-slate-950/60 sm:p-8">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">Data and preferences</p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white" id="privacy-modal-title">Privacy and Analytics</h2>
+          </div>
+          <button class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 transition hover:bg-white/10" id="close-privacy-modal" type="button">Close</button>
+        </div>
+        <div class="mt-6 space-y-4 text-sm leading-7 text-slate-300 sm:text-base">
+          <p>With your permission, we use Google Analytics 4 to measure visits and improve this site.</p>
+          <p>Google may receive visited pages, session data, approximate location, browser and device information, and site interaction events.</p>
+          <p>After acceptance, Analytics may store _ga cookies for up to two years. Detailed user and event data is retained for 14 months.</p>
+          <p>We do not use Google Ads, Google Signals, User-ID, or advertising personalization, and we do not send names, email addresses, free-form text, or contact content.</p>
+          <p>Controller: Matheus Ferraroni Sanches. To exercise your rights, use this site&#39;s contact option.</p>
+          <p>Your choice is stored in this browser and can be changed at any time.</p>
+          <p><a class="text-sky-200 underline decoration-sky-300/60 underline-offset-4 transition hover:text-sky-100" href="https://policies.google.com/technologies/partner-sites?hl=en" target="_blank" rel="noopener noreferrer">How Google uses this information</a></p>
+        </div>
+        <p class="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200" id="privacy-status" data-status-undecided="not set" data-status-granted="Analytics allowed" data-status-denied="Analytics not allowed" aria-live="polite">Current status: <span>not set</span></p>
+        <div class="mt-6 grid gap-3 sm:grid-cols-3">
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-3 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="privacy-deny" type="button">Do not allow Analytics</button>
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="privacy-contact-button" type="button" aria-haspopup="dialog" aria-controls="contact-modal">Open contact</button>
+          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-3 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="privacy-allow" type="button">Allow Analytics</button>
         </div>
       </div>
     </div>
