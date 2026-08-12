@@ -71,10 +71,66 @@ const analyticsConsentButtonIds = [
 ];
 const analyticsEvents = [
   "outbound_link_click",
+  "document_download",
   "contact_open",
   "tools_open",
   "language_change",
   "flow_field_change",
+];
+const academicWorks = [
+  {
+    educationId: "msc-computer-science",
+    title: "Alocação de RoadSide Units Ciente de Obstáculos e Diferentes Modelos de Propagação de Sinal",
+    advisor: "Leandro Aparecido Villas",
+    committee: ["Lucas Francisco Wanner", "Roberto Sadao Yokoyama"],
+    defenseDate: { "pt-BR": "27 de abril de 2020", en: "April 27, 2020" },
+    documents: [
+      {
+        id: "masters-dissertation",
+        kind: "dissertation",
+        path: "documents/dissertation.pdf",
+        downloadName: "matheus-ferraroni-sanches-dissertacao-mestrado.pdf",
+      },
+      {
+        id: "masters-presentation",
+        kind: "presentation",
+        path: "documents/slides_masters.pdf",
+        downloadName: "matheus-ferraroni-sanches-apresentacao-mestrado.pdf",
+      },
+    ],
+    records: [
+      {
+        id: "masters-doi",
+        url: "https://doi.org/10.47749/T/UNICAMP.2020.1129126",
+      },
+      {
+        id: "masters-unicamp-record",
+        url: "https://repositorio.unicamp.br/acervo/detalhe/1129126",
+      },
+    ],
+  },
+  {
+    educationId: "bsc-computer-science",
+    title: "Processamento e Entendimento de Linguagem Natural no Gerenciamento de Emergências para Obtenção de Consciência Situacional",
+    advisor: "Leonardo Castro Botega",
+    committee: ["Fabio Piola Navarro", "Guilherme Rodrigues Bilar"],
+    defenseDate: { "pt-BR": "27 de novembro de 2017", en: "November 27, 2017" },
+    grade: { "pt-BR": "10,0", en: "10.0" },
+    documents: [
+      {
+        id: "undergraduate-monograph",
+        kind: "undergraduate-thesis",
+        path: "documents/monograph.pdf",
+        downloadName: "matheus-ferraroni-sanches-monografia-graduacao.pdf",
+      },
+    ],
+    records: [
+      {
+        id: "undergraduate-univem-record",
+        url: "https://aberto.univem.edu.br/handle/11077/1662",
+      },
+    ],
+  },
 ];
 
 function readRepositoryFile(relativePath) {
@@ -335,6 +391,78 @@ test("localized pages preserve the same unique public IDs", () => {
   assert.deepEqual([...portugueseIds].sort(), [...englishIds].sort());
 });
 
+test("completed education cards expose academic metadata, downloads, and records", () => {
+  for (const expectedWork of academicWorks) {
+    const education = siteContent.education.find(
+      (entry) => entry.id === expectedWork.educationId
+    );
+
+    assert.ok(education?.academicWork, `${expectedWork.educationId} needs academic work data`);
+    assert.equal(education.academicWork.title, expectedWork.title);
+    assert.equal(education.advisor, expectedWork.advisor);
+    assert.deepEqual(education.academicWork.committee, expectedWork.committee);
+    assert.ok(!Object.hasOwn(education, "workTitle"), "Legacy workTitle must not remain");
+  }
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    const assetBase = page.locale === "pt-BR" ? "./assets" : "../assets";
+    const localizedLabels = page.locale === "pt-BR"
+      ? ["Trabalho acadêmico", "Defesa", "Orientador", "Banca examinadora"]
+      : ["Academic work", "Defense", "Advisor", "Examination committee"];
+
+    for (const expectedWork of academicWorks) {
+      const labelledBy = `academic-work-${expectedWork.educationId}-title`;
+      const escapedLabelledBy = labelledBy.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const section = html.match(
+        new RegExp(`<section\\b[^>]*aria-labelledby="[^"]*${escapedLabelledBy}[^"]*"[^>]*>[\\s\\S]*?<\\/section>`)
+      )?.[0];
+
+      assert.ok(section, `${page.path} needs the ${expectedWork.educationId} work section`);
+      assert.ok(section.includes(expectedWork.title));
+      if (page.locale === "en") {
+        assert.ok(section.includes('lang="pt-BR"'), "Original titles must retain their language");
+      }
+      assert.ok(section.includes(expectedWork.defenseDate[page.locale]));
+      assert.ok(section.includes(expectedWork.advisor));
+      for (const committeeMember of expectedWork.committee) {
+        assert.ok(section.includes(committeeMember));
+      }
+      for (const label of localizedLabels) {
+        assert.ok(section.includes(label), `${page.path} needs localized ${label}`);
+      }
+
+      if (expectedWork.grade) {
+        assert.ok(section.includes(page.locale === "pt-BR" ? "Nota:" : "Grade:"));
+        assert.ok(section.includes(expectedWork.grade[page.locale]));
+      } else {
+        assert.ok(!section.includes(page.locale === "pt-BR" ? "Nota:" : "Grade:"));
+      }
+
+      for (const document of expectedWork.documents) {
+        const link = findTagById(html, `academic-document-${document.id}`);
+        assert.equal(link?.name, "a");
+        assert.equal(link?.attributes.get("href"), `${assetBase}/${document.path}`);
+        assert.equal(link?.attributes.get("download"), document.downloadName);
+        assert.equal(link?.attributes.get("data-document-id"), document.id);
+        assert.equal(link?.attributes.get("data-document-kind"), document.kind);
+        assert.ok(!link?.attributes.has("data-analytics-id"));
+        assert.ok(existsSync(resolve(repositoryRoot, "assets", document.path)));
+      }
+
+      for (const record of expectedWork.records) {
+        const link = findTagById(html, `academic-record-${record.id}`);
+        assert.equal(link?.name, "a");
+        assert.equal(link?.attributes.get("href"), record.url);
+        assert.equal(link?.attributes.get("target"), "_blank");
+        assert.equal(link?.attributes.get("rel"), "noopener noreferrer");
+        assert.equal(link?.attributes.get("data-analytics-id"), record.id);
+        assert.equal(link?.attributes.get("data-analytics-group"), "academic-record");
+      }
+    }
+  }
+});
+
 test("sitemap and robots expose only the intended public routes", () => {
   const sitemap = readRepositoryFile("sitemap.xml");
   const robots = readRepositoryFile("robots.txt");
@@ -510,7 +638,13 @@ test("tracked outbound links expose opaque analytics identifiers only", () => {
     const trackedGroups = new Set(
       trackedLinks.map((link) => link.attributes.get("data-analytics-group"))
     );
-    for (const expectedGroup of ["professional-profile", "publication", "project", "tool"]) {
+    for (const expectedGroup of [
+      "academic-record",
+      "professional-profile",
+      "publication",
+      "project",
+      "tool",
+    ]) {
       assert.ok(trackedGroups.has(expectedGroup), `${page.path} must track ${expectedGroup} links`);
     }
 
@@ -571,6 +705,8 @@ test("site script implements consent-gated GA4 with the approved event contract"
 
   assert.match(siteScript, /dataset\.analyticsId|getAttribute\(["']data-analytics-id["']\)/);
   assert.match(siteScript, /dataset\.analyticsGroup|getAttribute\(["']data-analytics-group["']\)/);
+  assert.match(siteScript, /dataset\.documentId|getAttribute\(["']data-document-id["']\)/);
+  assert.match(siteScript, /dataset\.documentKind|getAttribute\(["']data-document-kind["']\)/);
   assert.match(siteScript, /document\.documentElement\.lang|document\.body\.dataset\.pageLanguage/);
   assert.match(siteScript, /event_callback/);
   assert.match(siteScript, /setTimeout/);
@@ -582,6 +718,8 @@ test("site script implements consent-gated GA4 with the approved event contract"
   for (const parameterName of [
     "target_id",
     "target_group",
+    "document_id",
+    "document_kind",
     "page_language",
     "target_language",
     "enabled",

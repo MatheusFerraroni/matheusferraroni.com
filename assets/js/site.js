@@ -6,13 +6,20 @@
   const pageLanguage = document.body.dataset.pageLanguage || "pt-BR";
   const supportedPageLanguages = new Set(["pt-BR", "en"]);
   const outboundGroups = new Set([
+    "academic-record",
     "professional-profile",
     "publication",
     "project",
     "tool",
   ]);
+  const documentKinds = new Set([
+    "dissertation",
+    "presentation",
+    "undergraduate-thesis",
+  ]);
   const eventParameterAllowlist = Object.freeze({
     outbound_link_click: new Set(["target_id", "target_group", "page_language"]),
+    document_download: new Set(["document_id", "document_kind", "page_language"]),
     contact_open: new Set(["page_language"]),
     tools_open: new Set(["page_language"]),
     language_change: new Set(["target_language"]),
@@ -238,7 +245,11 @@
       return outboundGroups.has(value) ? value : undefined;
     }
 
-    if (parameterName === "target_id") {
+    if (parameterName === "document_kind") {
+      return documentKinds.has(value) ? value : undefined;
+    }
+
+    if (parameterName === "target_id" || parameterName === "document_id") {
       return typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
         ? value
         : undefined;
@@ -662,6 +673,18 @@
       sendAnalyticsEvent("outbound_link_click", {
         target_id: outboundLink.dataset.analyticsId,
         target_group: outboundLink.dataset.analyticsGroup,
+        page_language: pageLanguage,
+      });
+    });
+  }
+
+  for (const documentLink of document.querySelectorAll(
+    'a[download][data-document-id][data-document-kind]'
+  )) {
+    documentLink.addEventListener("click", () => {
+      sendAnalyticsEvent("document_download", {
+        document_id: documentLink.dataset.documentId,
+        document_kind: documentLink.dataset.documentKind,
         page_language: pageLanguage,
       });
     });

@@ -112,20 +112,61 @@ const renderPreviousExperience = (locale) =>
     )
     .join("");
 
+const renderAcademicWork = (education, locale) => {
+  const { academicWork } = education;
+  if (!academicWork) {
+    return "";
+  }
+
+  const committee = new Intl.ListFormat(locale, {
+    style: "long",
+    type: "conjunction",
+  }).format(academicWork.committee);
+  const grade = academicWork.grade
+    ? `
+                  <div><dt class="inline font-semibold text-white">${text(siteContent.ui.grade, locale)}:</dt> <dd class="inline">${text(academicWork.grade, locale)}</dd></div>`
+    : "";
+  const documents = academicWork.documents
+    .map(
+      (document) => `
+                <a class="inline-flex items-center justify-center rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-center text-sm font-medium text-sky-100 transition hover:bg-sky-300/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300" id="academic-document-${escapeHtml(document.id)}" href="${localeSettings[locale].assetBase}/${escapeHtml(document.path)}" download="${escapeHtml(document.downloadName)}" data-document-id="${escapeHtml(document.id)}" data-document-kind="${escapeHtml(document.kind)}">${text(document.label, locale)}</a>`,
+    )
+    .join("");
+  const records = academicWork.records
+    .map(
+      (record) => `
+                <a class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-center text-sm font-medium text-sky-200 transition hover:bg-white/8 hover:text-sky-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300" id="academic-record-${escapeHtml(record.id)}" href="${escapeHtml(record.url)}"${analyticsAttributes(record.id, "academic-record")}${externalLinkAttributes}>${text(record.label, locale)}</a>`,
+    )
+    .join("");
+
+  return `
+              <section class="mt-4 border-t border-white/8 pt-4" aria-labelledby="education-${escapeHtml(education.id)}-degree academic-work-${escapeHtml(education.id)}-title">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-200/80" id="academic-work-${escapeHtml(education.id)}-title">${text(siteContent.ui.academicWork, locale)}</p>
+                <p class="mt-2 text-sm leading-7 text-slate-200 sm:text-base"><cite class="font-medium not-italic text-white"${languageAttribute(academicWork.titleLanguage, locale)}>${escapeHtml(academicWork.title)}</cite></p>
+                <dl class="mt-3 grid gap-2 text-sm leading-6 text-slate-300 sm:text-base">
+                  <div><dt class="inline font-semibold text-white">${text(siteContent.ui.defense, locale)}:</dt> <dd class="inline">${text(academicWork.defenseDate, locale)}</dd></div>
+                  <div><dt class="inline font-semibold text-white">${text(siteContent.ui.advisor, locale)}:</dt> <dd class="inline">${escapeHtml(education.advisor)}</dd></div>
+                  <div><dt class="inline font-semibold text-white">${text(siteContent.ui.examinationCommittee, locale)}:</dt> <dd class="inline">${escapeHtml(committee)}</dd></div>${grade}
+                </dl>
+                <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">${documents}${records}
+                </div>
+              </section>`;
+};
+
 const renderEducation = (locale) =>
   siteContent.education
     .map((education) => {
-      const work = education.workTitle
-        ? ` ${text(siteContent.ui[education.workKind], locale)}: “<span${languageAttribute(education.workTitleLanguage, locale)}>${escapeHtml(education.workTitle)}</span>”.`
-        : "";
+      const advisor = education.academicWork
+        ? ""
+        : ` ${text(siteContent.ui.advisor, locale)}: ${escapeHtml(education.advisor)}.`;
 
       return `
             <div id="education-${escapeHtml(education.id)}" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
               <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                <h3 class="text-xl font-semibold text-white">${text(education.degree, locale)}</h3>
+                <h3 class="text-xl font-semibold text-white" id="education-${escapeHtml(education.id)}-degree">${text(education.degree, locale)}</h3>
                 <span class="text-sm text-sky-200/80">${text(education.period, locale)}</span>
               </div>
-              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${escapeHtml(education.institution)}.${work} ${text(siteContent.ui.advisor, locale)}: ${escapeHtml(education.advisor)}.</p>
+              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${escapeHtml(education.institution)}.${advisor}</p>${renderAcademicWork(education, locale)}
             </div>`;
     })
     .join("");

@@ -68,9 +68,10 @@ export const siteContent = Object.freeze({
     repository: text("Repositório", "Repository"),
     technologies: text("Tecnologias", "Technologies"),
     advisor: text("Orientador", "Advisor"),
-    dissertation: text("Dissertação", "Dissertation"),
-    undergraduateProject: text("Trabalho", "Undergraduate project"),
-    work: text("Trabalho", "Paper"),
+    academicWork: text("Trabalho acadêmico", "Academic work"),
+    defense: text("Defesa", "Defense"),
+    examinationCommittee: text("Banca examinadora", "Examination committee"),
+    grade: text("Nota", "Grade"),
   },
 
   privacy: {
@@ -233,20 +234,71 @@ export const siteContent = Object.freeze({
       degree: text("Mestrado em Ciência da Computação", "Master’s in Computer Science"),
       period: text("2018 a 2020", "2018–2020"),
       institution: "Universidade Estadual de Campinas, UNICAMP",
-      workTitle: "Alocação de Road Side Unit Ciente de Obstáculos com Diferentes Modelos de Propagação de Sinal",
-      workTitleLanguage: "pt-BR",
-      workKind: "dissertation",
       advisor: "Leandro Aparecido Villas",
+      academicWork: {
+        title: "Alocação de RoadSide Units Ciente de Obstáculos e Diferentes Modelos de Propagação de Sinal",
+        titleLanguage: "pt-BR",
+        defenseDate: text("27 de abril de 2020", "April 27, 2020"),
+        committee: ["Lucas Francisco Wanner", "Roberto Sadao Yokoyama"],
+        documents: [
+          {
+            id: "masters-dissertation",
+            kind: "dissertation",
+            label: text("Baixar dissertação", "Download dissertation"),
+            path: "documents/dissertation.pdf",
+            downloadName: "matheus-ferraroni-sanches-dissertacao-mestrado.pdf",
+          },
+          {
+            id: "masters-presentation",
+            kind: "presentation",
+            label: text("Baixar apresentação", "Download presentation"),
+            path: "documents/slides_masters.pdf",
+            downloadName: "matheus-ferraroni-sanches-apresentacao-mestrado.pdf",
+          },
+        ],
+        records: [
+          {
+            id: "masters-doi",
+            label: "DOI",
+            url: "https://doi.org/10.47749/T/UNICAMP.2020.1129126",
+          },
+          {
+            id: "masters-unicamp-record",
+            label: text("Registro na Unicamp", "Unicamp record"),
+            url: "https://repositorio.unicamp.br/acervo/detalhe/1129126",
+          },
+        ],
+      },
     },
     {
       id: "bsc-computer-science",
       degree: text("Graduação em Ciência da Computação", "Bachelor’s in Computer Science"),
       period: text("2014 a 2017", "2014–2017"),
       institution: "Centro Universitário Eurípides de Marília, UNIVEM",
-      workTitle: "Processamento e Entendimento de Linguagem Natural no Gerenciamento de Emergências Para Obtenção de Consciência Situacional",
-      workTitleLanguage: "pt-BR",
-      workKind: "undergraduateProject",
       advisor: "Leonardo Castro Botega",
+      academicWork: {
+        title: "Processamento e Entendimento de Linguagem Natural no Gerenciamento de Emergências para Obtenção de Consciência Situacional",
+        titleLanguage: "pt-BR",
+        defenseDate: text("27 de novembro de 2017", "November 27, 2017"),
+        committee: ["Fabio Piola Navarro", "Guilherme Rodrigues Bilar"],
+        grade: text("10,0", "10.0"),
+        documents: [
+          {
+            id: "undergraduate-monograph",
+            kind: "undergraduate-thesis",
+            label: text("Baixar monografia", "Download undergraduate thesis"),
+            path: "documents/monograph.pdf",
+            downloadName: "matheus-ferraroni-sanches-monografia-graduacao.pdf",
+          },
+        ],
+        records: [
+          {
+            id: "undergraduate-univem-record",
+            label: text("Registro no UNIVEM", "UNIVEM record"),
+            url: "https://aberto.univem.edu.br/handle/11077/1662",
+          },
+        ],
+      },
     },
   ],
 
