@@ -115,7 +115,6 @@ const academicWorks = [
     advisor: "Leonardo Castro Botega",
     committee: ["Fabio Piola Navarro", "Guilherme Rodrigues Bilar"],
     defenseDate: { "pt-BR": "27 de novembro de 2017", en: "November 27, 2017" },
-    grade: { "pt-BR": "10,0", en: "10.0" },
     documents: [
       {
         id: "undergraduate-monograph",

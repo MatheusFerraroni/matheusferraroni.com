@@ -281,7 +281,6 @@ export const siteContent = Object.freeze({
         titleLanguage: "pt-BR",
         defenseDate: text("27 de novembro de 2017", "November 27, 2017"),
         committee: ["Fabio Piola Navarro", "Guilherme Rodrigues Bilar"],
-        grade: text("10,0", "10.0"),
         documents: [
           {
             id: "undergraduate-monograph",
