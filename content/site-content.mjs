@@ -75,13 +75,14 @@ export const siteContent = Object.freeze({
   },
 
   privacy: {
-    bannerLabel: text("Preferências de privacidade", "Privacy preferences"),
+    bannerTitle: text("Ajude a melhorar este site", "Help improve this site"),
     bannerText: text(
-      "Usamos o Google Analytics para medir visitas e melhorar o site. Ele só será ativado se você aceitar.",
-      "We use Google Analytics to measure visits and improve the site. It will only be enabled if you accept.",
+      "Com sua permissão, uso o Google Analytics para entender quais conteúdos são mais úteis. Não uso anúncios, Google Signals, nomes, e-mails ou texto livre. Você pode mudar essa escolha a qualquer momento.",
+      "With your permission, I use Google Analytics to understand which content is most useful. I do not use ads, Google Signals, names, email addresses, or free-form text. You can change this choice at any time.",
     ),
     accept: text("Aceitar", "Accept"),
-    reject: text("Recusar", "Reject"),
+    reject: text("Recusar", "Decline"),
+    bannerPrivacy: text("Privacidade", "Privacy"),
     privacy: text("Privacidade", "Privacy"),
     modalEyebrow: text("Dados e preferências", "Data and preferences"),
     modalTitle: text("Privacidade e Analytics", "Privacy and Analytics"),
@@ -106,8 +107,8 @@ export const siteContent = Object.freeze({
       "Controller: Matheus Ferraroni Sanches. To exercise your rights, use this site's contact option.",
     ),
     choiceStorage: text(
-      "Sua escolha é guardada neste navegador e pode ser alterada a qualquer momento.",
-      "Your choice is stored in this browser and can be changed at any time.",
+      "Seu aceite é guardado neste navegador e pode ser revogado a qualquer momento. Se você recusar, o aviso será ocultado somente nesta página.",
+      "Your acceptance is stored in this browser and can be revoked at any time. If you decline, the notice is hidden only on this page.",
     ),
     googleInformation: text(
       "Como o Google usa essas informações",

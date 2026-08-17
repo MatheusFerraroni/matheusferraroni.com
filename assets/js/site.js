@@ -70,6 +70,15 @@
     );
   };
 
+  const clearPersistedConsent = () => {
+    try {
+      window.localStorage.removeItem(ANALYTICS_CONSENT_KEY);
+      return window.localStorage.getItem(ANALYTICS_CONSENT_KEY) === null;
+    } catch {
+      return false;
+    }
+  };
+
   const readConsent = () => {
     try {
       const storedValue = window.localStorage.getItem(ANALYTICS_CONSENT_KEY);
@@ -78,20 +87,25 @@
       }
 
       const consent = JSON.parse(storedValue);
-      const hasValidStatus =
-        consent?.status === CONSENT_GRANTED || consent?.status === CONSENT_DENIED;
+      const hasValidStatus = consent?.status === CONSENT_GRANTED;
       const hasValidTimestamp = hasValidConsentTimestamp(consent?.updatedAt);
 
-      return hasValidStatus && hasValidTimestamp ? consent.status : null;
+      if (hasValidStatus && hasValidTimestamp) {
+        return CONSENT_GRANTED;
+      }
+
+      clearPersistedConsent();
+      return null;
     } catch {
+      clearPersistedConsent();
       return null;
     }
   };
 
-  const persistConsent = (status) => {
+  const persistGrantedConsent = () => {
     try {
       const serializedConsent = JSON.stringify({
-        status,
+        status: CONSENT_GRANTED,
         updatedAt: new Date().toISOString(),
       });
       window.localStorage.setItem(
@@ -590,7 +604,7 @@
 
   const allowAnalytics = () => {
     currentConsentStatus = CONSENT_GRANTED;
-    persistConsent(CONSENT_GRANTED);
+    persistGrantedConsent();
     updatePrivacyStatus();
     finishConsentInteraction();
     initializeAnalytics();
@@ -599,9 +613,9 @@
   const denyAnalytics = () => {
     const shouldReload = analyticsInitialized;
     currentConsentStatus = CONSENT_DENIED;
-    const denialPersisted = persistConsent(CONSENT_DENIED);
+    const consentCleared = clearPersistedConsent();
     const canReloadFailClosed =
-      denialPersisted || readConsent() !== CONSENT_GRANTED;
+      consentCleared || readConsent() !== CONSENT_GRANTED;
     updatePrivacyStatus();
     finishConsentInteraction();
 

@@ -56,9 +56,10 @@ Depois de publicar uma alteração estrutural:
 5. Inspecione e solicite indexação de `/` e `/en/`.
 
 O site usa o Google Analytics 4 somente após consentimento explícito. Antes do
-aceite, a tag externa não é carregada e nenhuma medição é enviada ao Google. A
-preferência pode ser recusada ou revogada pelo modal acessível de privacidade no
-rodapé; o conteúdo equivalente é renderizado em português e inglês.
+aceite, a tag externa não é carregada e nenhuma medição é enviada ao Google. O
+aceite é mantido no navegador; a recusa apenas fecha o aviso na página atual e a
+revogação remove o aceite salvo. As opções também ficam disponíveis no modal
+acessível de privacidade no rodapé, em português e inglês.
 
 A implementação mede visualizações e interações identificadas por valores fixos,
 sem enviar texto livre, e-mail ou parâmetros de consulta. O código mantém os

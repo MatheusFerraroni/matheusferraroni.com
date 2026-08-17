@@ -476,11 +476,12 @@
       <button class="rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white" id="privacy-footer-button" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacy</button>
     </footer>
 
-    <aside class="fixed inset-x-0 bottom-0 z-20 hidden border-t border-white/10 bg-slate-950/95 px-4 py-4 shadow-2xl shadow-slate-950/70 backdrop-blur-md sm:px-6" id="analytics-consent-banner" aria-label="Privacy preferences" aria-hidden="true" inert>
-      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="max-w-3xl text-sm leading-6 text-slate-200">We use Google Analytics to measure visits and improve the site. It will only be enabled if you accept.</p>
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-reject" type="button">Reject</button>
+    <aside class="fixed inset-x-0 bottom-0 z-20 hidden px-4 pb-8 sm:px-6 sm:pb-10" id="analytics-consent-banner" aria-labelledby="analytics-consent-title" aria-describedby="analytics-consent-description" aria-hidden="true" inert>
+      <div class="mx-auto w-full max-w-3xl rounded-[2rem] border border-sky-300/35 bg-slate-800/95 p-5 shadow-2xl shadow-slate-950/80 ring-1 ring-sky-300/20 backdrop-blur-md sm:p-6">
+        <h2 class="text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl" id="analytics-consent-title">Help improve this site</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-200 sm:text-base" id="analytics-consent-description">With your permission, I use Google Analytics to understand which content is most useful. I do not use ads, Google Signals, names, email addresses, or free-form text. You can change this choice at any time.</p>
+        <div class="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-reject" type="button">Decline</button>
           <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacy</button>
           <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-accept" type="button">Accept</button>
         </div>
@@ -533,7 +534,7 @@
           <p>After acceptance, Analytics may store _ga cookies for up to two years. Detailed user and event data is retained for 14 months.</p>
           <p>We do not use Google Ads, Google Signals, User-ID, or advertising personalization, and we do not send names, email addresses, free-form text, or contact content.</p>
           <p>Controller: Matheus Ferraroni Sanches. To exercise your rights, use this site&#39;s contact option.</p>
-          <p>Your choice is stored in this browser and can be changed at any time.</p>
+          <p>Your acceptance is stored in this browser and can be revoked at any time. If you decline, the notice is hidden only on this page.</p>
           <p><a class="text-sky-200 underline decoration-sky-300/60 underline-offset-4 transition hover:text-sky-100" href="https://policies.google.com/technologies/partner-sites?hl=en" target="_blank" rel="noopener noreferrer">How Google uses this information</a></p>
         </div>
         <p class="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200" id="privacy-status" data-status-undecided="not set" data-status-granted="Analytics allowed" data-status-denied="Analytics not allowed" aria-live="polite">Current status: <span>not set</span></p>

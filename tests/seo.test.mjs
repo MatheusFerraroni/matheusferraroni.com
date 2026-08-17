@@ -47,6 +47,8 @@ const pages = [
 ];
 const analyticsConsentElementIds = [
   "analytics-consent-banner",
+  "analytics-consent-title",
+  "analytics-consent-description",
   "analytics-consent-accept",
   "analytics-consent-reject",
   "analytics-consent-privacy",
@@ -527,6 +529,13 @@ for (const page of pages) {
       assert.equal(trigger?.attributes.get("aria-controls"), "privacy-modal");
     }
 
+    const consentBanner = findTagById(html, "analytics-consent-banner");
+    assert.equal(consentBanner?.attributes.get("aria-labelledby"), "analytics-consent-title");
+    assert.equal(
+      consentBanner?.attributes.get("aria-describedby"),
+      "analytics-consent-description"
+    );
+
     const privacyModal = findTagById(html, "privacy-modal");
     assert.equal(privacyModal?.attributes.get("role"), "dialog");
     assert.equal(privacyModal?.attributes.get("aria-modal"), "true");
@@ -566,8 +575,27 @@ for (const page of pages) {
 test("analytics consent copy and controls are localized in PT-BR and English", () => {
   const portugueseHtml = readRepositoryFile("index.html");
   const englishHtml = readRepositoryFile("en/index.html");
+  const expectedBannerCopy = {
+    "pt-BR": {
+      title: "Ajude a melhorar este site",
+      description:
+        "Com sua permissão, uso o Google Analytics para entender quais conteúdos são mais úteis. Não uso anúncios, Google Signals, nomes, e-mails ou texto livre. Você pode mudar essa escolha a qualquer momento.",
+      reject: "Recusar",
+      privacy: "Privacidade",
+      accept: "Aceitar",
+    },
+    en: {
+      title: "Help improve this site",
+      description:
+        "With your permission, I use Google Analytics to understand which content is most useful. I do not use ads, Google Signals, names, email addresses, or free-form text. You can change this choice at any time.",
+      reject: "Decline",
+      privacy: "Privacy",
+      accept: "Accept",
+    },
+  };
   const localizedElementIds = [
-    "analytics-consent-banner",
+    "analytics-consent-title",
+    "analytics-consent-description",
     "analytics-consent-accept",
     "analytics-consent-reject",
     "analytics-consent-privacy",
@@ -580,14 +608,20 @@ test("analytics consent copy and controls are localized in PT-BR and English", (
     "privacy-contact-button",
   ];
 
-  assert.match(
-    textFromElementById(portugueseHtml, "analytics-consent-banner"),
-    /Usamos o Google Analytics para medir visitas e melhorar o site\./
-  );
-  assert.match(
-    textFromElementById(englishHtml, "analytics-consent-banner"),
-    /Google Analytics/i
-  );
+  for (const [locale, html] of [
+    ["pt-BR", portugueseHtml],
+    ["en", englishHtml],
+  ]) {
+    const expected = expectedBannerCopy[locale];
+    assert.equal(textFromElementById(html, "analytics-consent-title"), expected.title);
+    assert.equal(
+      textFromElementById(html, "analytics-consent-description"),
+      expected.description
+    );
+    assert.equal(textFromElementById(html, "analytics-consent-reject"), expected.reject);
+    assert.equal(textFromElementById(html, "analytics-consent-privacy"), expected.privacy);
+    assert.equal(textFromElementById(html, "analytics-consent-accept"), expected.accept);
+  }
 
   for (const id of localizedElementIds) {
     const portugueseText = textFromElementById(portugueseHtml, id);
@@ -665,6 +699,7 @@ test("site script implements consent-gated GA4 with the approved event contract"
   assert.equal((siteScript.match(/createElement\(["']script["']\)/g) || []).length, 1);
   assert.match(siteScript, /localStorage\.getItem/);
   assert.match(siteScript, /localStorage\.setItem/);
+  assert.match(siteScript, /localStorage\.removeItem/);
   assert.match(siteScript, /JSON\.parse/);
   assert.match(siteScript, /JSON\.stringify/);
   assert.match(siteScript, /updatedAt/);
@@ -673,6 +708,14 @@ test("site script implements consent-gated GA4 with the approved event contract"
   assert.match(siteScript, /document\.cookie/);
   assert.match(siteScript, /startsWith\(["']_ga["']\)/);
   assert.match(siteScript, /location\.reload\(\)/);
+  assert.match(siteScript, /const persistGrantedConsent = \(\) =>/);
+  assert.match(siteScript, /persistGrantedConsent\(\)/);
+  assert.match(siteScript, /const consentCleared = clearPersistedConsent\(\)/);
+  assert.doesNotMatch(siteScript, /persist(?:Granted)?Consent\(CONSENT_DENIED\)/);
+  assert.doesNotMatch(
+    siteScript,
+    /consent\?\.status === CONSENT_GRANTED\s*\|\|\s*consent\?\.status === CONSENT_DENIED/
+  );
 
   assert.match(siteScript, /["']?analytics_storage["']?\s*:\s*["']denied["']/);
   assert.match(siteScript, /["']?analytics_storage["']?\s*:\s*["']granted["']/);

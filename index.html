@@ -476,11 +476,12 @@
       <button class="rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white" id="privacy-footer-button" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacidade</button>
     </footer>
 
-    <aside class="fixed inset-x-0 bottom-0 z-20 hidden border-t border-white/10 bg-slate-950/95 px-4 py-4 shadow-2xl shadow-slate-950/70 backdrop-blur-md sm:px-6" id="analytics-consent-banner" aria-label="Preferências de privacidade" aria-hidden="true" inert>
-      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="max-w-3xl text-sm leading-6 text-slate-200">Usamos o Google Analytics para medir visitas e melhorar o site. Ele só será ativado se você aceitar.</p>
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-reject" type="button">Recusar</button>
+    <aside class="fixed inset-x-0 bottom-0 z-20 hidden px-4 pb-8 sm:px-6 sm:pb-10" id="analytics-consent-banner" aria-labelledby="analytics-consent-title" aria-describedby="analytics-consent-description" aria-hidden="true" inert>
+      <div class="mx-auto w-full max-w-3xl rounded-[2rem] border border-sky-300/35 bg-slate-800/95 p-5 shadow-2xl shadow-slate-950/80 ring-1 ring-sky-300/20 backdrop-blur-md sm:p-6">
+        <h2 class="text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl" id="analytics-consent-title">Ajude a melhorar este site</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-200 sm:text-base" id="analytics-consent-description">Com sua permissão, uso o Google Analytics para entender quais conteúdos são mais úteis. Não uso anúncios, Google Signals, nomes, e-mails ou texto livre. Você pode mudar essa escolha a qualquer momento.</p>
+        <div class="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-reject" type="button">Recusar</button>
           <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">Privacidade</button>
           <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-accept" type="button">Aceitar</button>
         </div>
@@ -533,7 +534,7 @@
           <p>Após o aceite, o Analytics pode gravar cookies _ga por até dois anos. Os dados detalhados de usuários e eventos ficam retidos por 14 meses.</p>
           <p>Não usamos Google Ads, Google Signals, User-ID ou personalização publicitária, nem enviamos nome, e-mail, texto livre ou conteúdo de contato.</p>
           <p>Controlador: Matheus Ferraroni Sanches. Para exercer seus direitos, use o contato deste site.</p>
-          <p>Sua escolha é guardada neste navegador e pode ser alterada a qualquer momento.</p>
+          <p>Seu aceite é guardado neste navegador e pode ser revogado a qualquer momento. Se você recusar, o aviso será ocultado somente nesta página.</p>
           <p><a class="text-sky-200 underline decoration-sky-300/60 underline-offset-4 transition hover:text-sky-100" href="https://policies.google.com/technologies/partner-sites?hl=pt-BR" target="_blank" rel="noopener noreferrer">Como o Google usa essas informações</a></p>
         </div>
         <p class="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200" id="privacy-status" data-status-undecided="não definido" data-status-granted="Analytics permitido" data-status-denied="Analytics não permitido" aria-live="polite">Estado atual: <span>não definido</span></p>

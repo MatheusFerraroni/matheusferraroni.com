@@ -470,12 +470,13 @@ ${renderLanguageNavigation(locale)}
       <button class="rounded-full border border-white/10 bg-slate-950/65 px-4 py-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-200 backdrop-blur-md transition hover:bg-white/10 hover:text-white" id="privacy-footer-button" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">${text(siteContent.privacy.privacy, locale)}</button>
     </footer>
 
-    <aside class="fixed inset-x-0 bottom-0 z-20 hidden border-t border-white/10 bg-slate-950/95 px-4 py-4 shadow-2xl shadow-slate-950/70 backdrop-blur-md sm:px-6" id="analytics-consent-banner" aria-label="${text(siteContent.privacy.bannerLabel, locale)}" aria-hidden="true" inert>
-      <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="max-w-3xl text-sm leading-6 text-slate-200">${text(siteContent.privacy.bannerText, locale)}</p>
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-reject" type="button">${text(siteContent.privacy.reject, locale)}</button>
-          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">${text(siteContent.privacy.privacy, locale)}</button>
+    <aside class="fixed inset-x-0 bottom-0 z-20 hidden px-4 pb-8 sm:px-6 sm:pb-10" id="analytics-consent-banner" aria-labelledby="analytics-consent-title" aria-describedby="analytics-consent-description" aria-hidden="true" inert>
+      <div class="mx-auto w-full max-w-3xl rounded-[2rem] border border-sky-300/35 bg-slate-800/95 p-5 shadow-2xl shadow-slate-950/80 ring-1 ring-sky-300/20 backdrop-blur-md sm:p-6">
+        <h2 class="text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl" id="analytics-consent-title">${text(siteContent.privacy.bannerTitle, locale)}</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-200 sm:text-base" id="analytics-consent-description">${text(siteContent.privacy.bannerText, locale)}</p>
+        <div class="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-reject" type="button">${text(siteContent.privacy.reject, locale)}</button>
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10" id="analytics-consent-privacy" type="button" aria-haspopup="dialog" aria-controls="privacy-modal">${text(siteContent.privacy.bannerPrivacy, locale)}</button>
           <button class="rounded-full border border-sky-300/40 bg-sky-300/10 px-4 py-2 text-sm font-medium text-sky-100 transition hover:bg-sky-300/20" id="analytics-consent-accept" type="button">${text(siteContent.privacy.accept, locale)}</button>
         </div>
       </div>
