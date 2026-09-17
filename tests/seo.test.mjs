@@ -464,6 +464,125 @@ test("completed education cards expose academic metadata, downloads, and records
   }
 });
 
+test("professional history and awards expose the confirmed corrections and results", () => {
+  const clickideia = siteContent.experience.previous.find(
+    (entry) => entry.id === "clickideia-software-developer"
+  );
+  const sumup = siteContent.experience.previous.find(
+    (entry) => entry.id === "sumup-senior-software-engineer"
+  );
+  const cit = siteContent.experience.previous.find(
+    (entry) => entry.id === "cit-data-scientist"
+  );
+  const cygni = siteContent.experience.current.find((entry) => entry.id === "cygni-cto");
+  const orion = siteContent.experience.current.find((entry) => entry.id === "orion-cto");
+  const programmingAward = siteContent.awards.other.find(
+    (entry) => entry.id === "regional-programming-third-place"
+  );
+
+  assert.equal(
+    clickideia?.role["pt-BR"],
+    "Desenvolvedor de Software — Bolsista FAPESP (Treinamento Técnico)"
+  );
+  assert.equal(clickideia?.role.en, "Software Developer — FAPESP Technical Training Fellow");
+  assert.match(sumup?.description["pt-BR"], /milhões de dólares/);
+  assert.match(cit?.description["pt-BR"], /15%/);
+  assert.match(cygni?.description["pt-BR"], /10%/);
+  assert.match(cygni?.description["pt-BR"], /duplicaram a velocidade de processamento/);
+  assert.match(orion?.description["pt-BR"], /CINTEC/);
+  assert.match(orion?.description["pt-BR"], /tecnologia da CYGNI AgroScience/);
+  assert.match(orion?.description["pt-BR"], /sem exercer a direção do laboratório/);
+  assert.match(programmingAward?.description["pt-BR"], /Terceiro colocado/);
+  assert.match(programmingAward?.description.en, /Third place/);
+  assert.ok(!siteContent.awards.other.some((entry) => entry.id.includes("fourth-place")));
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    assert.ok(!html.includes("undefined:"), `${page.path} must not render an undefined award label`);
+    assert.ok(html.includes(page.locale === "pt-BR" ? "Trabalho:" : "Work:"));
+    assert.ok(html.includes(clickideia.role[page.locale]));
+    assert.ok(html.includes(programmingAward.description[page.locale]));
+  }
+});
+
+test("recent projects expose problem, contribution, technologies, status, and repository", () => {
+  const expectedProjectIds = [
+    "queroquero",
+    "wackywacky",
+    "wackywacky-analysis",
+    "semantic-replace-with-federated-learning",
+    "visual-algo",
+  ];
+
+  assert.deepEqual(
+    siteContent.projects.slice(0, expectedProjectIds.length).map((project) => project.id),
+    expectedProjectIds
+  );
+
+  for (const projectId of expectedProjectIds) {
+    const project = siteContent.projects.find((entry) => entry.id === projectId);
+    assert.ok(project?.problem, `${projectId} needs a problem statement`);
+    assert.ok(project?.contribution, `${projectId} needs a contribution statement`);
+    assert.ok(project?.technologies, `${projectId} needs technologies`);
+    assert.ok(project?.status, `${projectId} needs a current status`);
+    assert.ok(
+      project?.links?.some((link) => link.kind === "repository"),
+      `${projectId} needs a repository link`
+    );
+  }
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    const labels = page.locale === "pt-BR"
+      ? ["Problema:", "Contribuição:", "Tecnologias:", "Estado atual:"]
+      : ["Problem:", "Contribution:", "Technologies:", "Current status:"];
+    for (const projectId of expectedProjectIds) {
+      assert.ok(html.includes(`id="project-${projectId}"`));
+    }
+    for (const label of labels) {
+      assert.ok(html.includes(label), `${page.path} needs localized project label ${label}`);
+    }
+  }
+});
+
+test("doctoral research, teaching, languages, and selected publications are current", () => {
+  const phd = siteContent.education.find((entry) => entry.id === "phd-computer-science");
+  const fbmCourse = siteContent.experience.previous.find(
+    (entry) => entry.id === "fbm-python-finance-instructor"
+  );
+  const languages = siteContent.skillGroups
+    .flatMap((group) => group.items)
+    .find((item) => item.id === "languages");
+  const publications = siteContent.publications.flatMap((group) => group.items);
+  const efis = publications.find((publication) => publication.id === "efis");
+  const preprint = publications.find(
+    (publication) => publication.id === "curricular-transfer-learning"
+  );
+  const sbpo = publications.find(
+    (publication) => publication.id === "maximum-coverage-medical-emergency"
+  );
+
+  assert.equal(phd?.period["pt-BR"], "2020, em andamento");
+  assert.match(phd?.description["pt-BR"], /26 de outubro de 2026/);
+  assert.match(phd?.description["pt-BR"], /Mitigação de Vazamento em Aprendizado Federado/);
+  assert.match(fbmCourse?.role["pt-BR"], /Python para Finanças \(18 horas\)/);
+  assert.equal(languages?.value["pt-BR"], "Português nativo · Inglês fluente");
+  assert.equal(languages?.value.en, "Native Portuguese · Fluent English");
+  assert.equal(efis?.link?.url, "https://doi.org/10.1109/DCOSS52077.2021.00032");
+  assert.ok(efis?.description);
+  assert.equal(preprint?.venue.en, "arXiv preprint");
+  assert.equal(sbpo?.link?.url, "https://doi.org/10.59254/sbpo-2019-106784");
+
+  for (const page of pages) {
+    const html = readRepositoryFile(page.path);
+    assert.ok(html.includes(phd.description[page.locale]));
+    assert.ok(html.includes(fbmCourse.role[page.locale]));
+    assert.ok(html.includes(languages.value[page.locale]));
+    assert.ok(html.includes(efis.link.label));
+    assert.ok(html.includes(sbpo.title));
+  }
+});
+
 test("sitemap and robots expose only the intended public routes", () => {
   const sitemap = readRepositoryFile("sitemap.xml");
   const robots = readRepositoryFile("robots.txt");

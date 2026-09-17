@@ -67,6 +67,10 @@ export const siteContent = Object.freeze({
     ),
     repository: text("Repositório", "Repository"),
     technologies: text("Tecnologias", "Technologies"),
+    problem: text("Problema", "Problem"),
+    contribution: text("Contribuição", "Contribution"),
+    status: text("Estado atual", "Current status"),
+    work: text("Trabalho", "Work"),
     advisor: text("Orientador", "Advisor"),
     academicWork: text("Trabalho acadêmico", "Academic work"),
     defense: text("Defesa", "Defense"),
@@ -183,8 +187,8 @@ export const siteContent = Object.freeze({
         ),
         period: text("Jun/2025, atual", "Jun 2025–present"),
         description: text(
-          "Responsável pelas diretorias de Tecnologia e Pesquisa & Desenvolvimento do Grupo Orion Sistemas Agrícolas. Lidera a estratégia tecnológica e o desenvolvimento de novas máquinas, equipamentos agrícolas, soluções tecnológicas e plataformas de dados geoespaciais para apoiar a tomada de decisão no campo, integrando software, sistemas corporativos, infraestrutura, segurança da informação e transformação digital.",
-          "Leads the Technology and Research & Development divisions at Grupo Orion Sistemas Agrícolas. He drives the technology strategy and the development of new machinery, agricultural equipment, technology solutions, and geospatial data platforms that support decision-making in the field, integrating software, enterprise systems, infrastructure, information security, and digital transformation.",
+          "Responsável pelas diretorias de Tecnologia e Pesquisa & Desenvolvimento do Grupo Orion Sistemas Agrícolas, pelo CINTEC e pela tecnologia da CYGNI AgroScience. Lidera a estratégia tecnológica e o desenvolvimento de máquinas, equipamentos agrícolas, soluções digitais e plataformas de dados geoespaciais. Também colabora tecnicamente com os experimentos do laboratório de biologia, sem exercer a direção do laboratório.",
+          "Leads the Technology and Research & Development divisions at Grupo Orion Sistemas Agrícolas and is responsible for CINTEC and technology at CYGNI AgroScience. He drives technology strategy and the development of machinery, agricultural equipment, digital solutions, and geospatial data platforms. He also contributes technology expertise to experiments conducted by the biology laboratory without directing the laboratory.",
         ),
       },
       {
@@ -207,18 +211,37 @@ export const siteContent = Object.freeze({
         ),
         period: text("Set/2020 – Jun/2025", "Sep 2020–Jun 2025"),
         description: text(
-          "Responsável pela estratégia tecnológica, arquitetura de software e liderança das equipes de desenvolvimento, conduzindo a evolução de plataformas de sensoriamento remoto e análise geoespacial baseadas em imagens de satélite, desde a concepção do produto até sua operação e entrega aos clientes.",
-          "Led technology strategy, software architecture, and development teams, guiding the evolution of remote sensing and geospatial analysis platforms based on satellite imagery, from product conception through operation and customer delivery.",
+          "Responsável pela estratégia tecnológica, arquitetura de software e liderança das equipes de desenvolvimento, conduziu a evolução de plataformas de sensoriamento remoto e análise geoespacial baseadas em imagens de satélite. As melhorias reduziram custos em 10% e duplicaram a velocidade de processamento.",
+          "Led technology strategy, software architecture, and development teams while evolving remote-sensing and geospatial-analysis platforms based on satellite imagery. The improvements reduced costs by 10% and doubled processing speed.",
         ),
       },
     ],
     previous: [
-      { id: "sumup-senior-software-engineer", organization: "SumUp", role: text("Engenheiro de Software Sênior", "Senior Software Engineer"), period: text("Jun/2022 – Jun/2025", "Jun 2022–Jun 2025") },
-      { id: "cit-data-scientist", organization: "CI&T Software", role: text("Cientista de Dados/Pesquisador", "Data Scientist/Researcher"), period: text("Fev/2021 – Set/2022", "Feb 2021–Sep 2022") },
+      {
+        id: "sumup-senior-software-engineer",
+        organization: "SumUp",
+        role: text("Engenheiro de Software Sênior", "Senior Software Engineer"),
+        period: text("Jun/2022 – Jun/2025", "Jun 2022–Jun 2025"),
+        description: text(
+          "Entregou iniciativas de engenharia que geraram economia anual de milhões de dólares.",
+          "Delivered engineering initiatives that generated millions of dollars in annual savings.",
+        ),
+      },
+      {
+        id: "cit-data-scientist",
+        organization: "CI&T Software",
+        role: text("Cientista de Dados/Pesquisador", "Data Scientist/Researcher"),
+        period: text("Fev/2021 – Set/2022", "Feb 2021–Sep 2022"),
+        description: text(
+          "Desenvolveu uma solução de ciência de dados que melhorou a acurácia em 15%.",
+          "Developed a data-science solution that improved accuracy by 15%.",
+        ),
+      },
       { id: "cygni-tech-lead", organization: "CYGNI AgroScience", role: text("Líder técnico", "Tech Lead"), period: text("Dez/2019 – Ago/2020", "Dec 2019–Aug 2020") },
-      { id: "clickideia-data-scientist", organization: "Clickideia Tecnologia Educacional", role: text("Cientista de Dados/Pesquisador", "Data Scientist/Researcher"), period: text("Dez/2018 – Nov/2019", "Dec 2018–Nov 2019") },
+      { id: "clickideia-software-developer", organization: "Clickideia Tecnologia Educacional", role: text("Desenvolvedor de Software — Bolsista FAPESP (Treinamento Técnico)", "Software Developer — FAPESP Technical Training Fellow"), period: text("Dez/2018 – Nov/2019", "Dec 2018–Nov 2019") },
       { id: "cygni-it-manager", organization: "CYGNI AgroScience", role: text("Gerente de TI", "IT Manager"), period: text("Ago/2016 – Nov/2018", "Aug 2016–Nov 2018") },
       { id: "univem-cnpq-researcher", organization: "Centro Universitário Eurípides de Marília, UNIVEM", role: text("Pesquisador CNPq", "CNPq Researcher"), period: text("Jan/2015 – Jul/2016", "Jan 2015–Jul 2016") },
+      { id: "fbm-python-finance-instructor", organization: "FBM", role: text("Professor convidado — Python para Finanças (18 horas)", "Guest Instructor — Python for Finance (18 hours)"), period: "2024" },
     ],
   },
 
@@ -229,6 +252,10 @@ export const siteContent = Object.freeze({
       period: text("2020, em andamento", "2020–present"),
       institution: "Universidade Estadual de Campinas, UNICAMP",
       advisor: "Leandro Aparecido Villas",
+      description: text(
+        "Pesquisa: Geração e Adaptação de Conjuntos de Dados Conversacionais para Modelos de Linguagem com Mitigação de Vazamento em Aprendizado Federado. Defesa agendada para 26 de outubro de 2026; curso em andamento.",
+        "Research: Generation and Adaptation of Conversational Datasets for Language Models with Leakage Mitigation in Federated Learning. Defense scheduled for October 26, 2026; degree in progress.",
+      ),
     },
     {
       id: "msc-computer-science",
@@ -315,6 +342,7 @@ export const siteContent = Object.freeze({
       id: "data-and-collaboration",
       items: [
         { id: "databases", label: text("Bancos de dados", "Databases"), value: "SQL, NoSQL, DynamoDB, PostgreSQL, Snowflake" },
+        { id: "languages", label: text("Idiomas", "Languages"), value: text("Português nativo · Inglês fluente", "Native Portuguese · Fluent English") },
         { id: "soft-skills", label: text("Competências interpessoais", "Soft Skills"), value: text("Diligente, aprendizado rápido, proativo, colaborativo, pensamento crítico", "Diligent, quick learner, proactive, collaborative, critical thinker") },
       ],
     },
@@ -340,7 +368,7 @@ export const siteContent = Object.freeze({
           id: "curricular-transfer-learning",
           title: "Curricular Transfer Learning for Sentence Encoded Tasks",
           titleLanguage: "en",
-          venue: "arXiv",
+          venue: text("Preprint no arXiv", "arXiv preprint"),
           description: text(
             "Estudo sobre aprendizado curricular para adaptação gradual entre distribuições em tarefas com sentenças codificadas.",
             "Study of curriculum learning for gradual adaptation between distributions in sentence-encoded tasks.",
@@ -386,6 +414,11 @@ export const siteContent = Object.freeze({
           title: "EFIS: Ecological Fuel-consumption Intelligent System",
           titleLanguage: "en",
           venue: "DCOSS 2021",
+          description: text(
+            "Sistema inteligente que combina controlador fuzzy e rede neural para recomendar velocidade instantânea e reduzir o consumo de combustível usando características do veículo e da rodovia.",
+            "An intelligent system combining a fuzzy controller and neural network to recommend instantaneous speed and reduce fuel consumption using vehicle and highway characteristics.",
+          ),
+          link: { label: "DOI: 10.1109/DCOSS52077.2021.00032", url: "https://doi.org/10.1109/DCOSS52077.2021.00032" },
         },
       ],
     },
@@ -402,9 +435,141 @@ export const siteContent = Object.freeze({
         },
       ],
     },
+    {
+      id: "publications-2019",
+      year: "2019",
+      items: [
+        {
+          id: "maximum-coverage-medical-emergency",
+          title: "Genetic Algorithm for the Maximum Coverage Location Problem Applied to Medical Emergency",
+          titleLanguage: "en",
+          venue: "SBPO 2019",
+          description: text(
+            "Algoritmo genético para selecionar locais de espera de veículos de emergência considerando informações de trânsito; trabalho premiado com o 2º lugar no Prêmio Roberto Diéguez Galvão.",
+            "A genetic algorithm for selecting emergency-vehicle standby locations using traffic information; awarded second place in the Roberto Diéguez Galvão Award.",
+          ),
+          link: { label: "DOI: 10.59254/sbpo-2019-106784", url: "https://doi.org/10.59254/sbpo-2019-106784" },
+        },
+      ],
+    },
   ],
 
   projects: [
+    {
+      id: "queroquero",
+      name: "Quero-Quero",
+      subtitle: text("Dados e continual pretraining em português brasileiro", "Brazilian Portuguese data and continual pretraining"),
+      description: text(
+        "Pipeline de pesquisa reprodutível para preparar seis corpora em português brasileiro e adaptar o Tucano 2 0.6B por continual pretraining.",
+        "A reproducible research pipeline for preparing six Brazilian Portuguese corpora and adapting Tucano 2 0.6B through continual pretraining.",
+      ),
+      problem: text(
+        "Preparar dados heterogêneos em escala e treinar modelos de linguagem com proveniência, privacidade e comparabilidade entre experimentos.",
+        "Prepare heterogeneous data at scale and train language models with provenance, privacy, and comparability across experiments.",
+      ),
+      contribution: text(
+        "Projetou e implementou validação, limpeza conservadora, deduplicação, tokenização, packing, shards verificáveis e treinamento retomável com avaliação de loss e perplexidade.",
+        "Designed and implemented validation, conservative cleaning, deduplication, tokenization, packing, verifiable shards, and resumable training with loss and perplexity evaluation.",
+      ),
+      technologies: "Python, PyTorch, Hugging Face Transformers, Parquet, Slurm, DDP, NCCL",
+      status: text(
+        "Preparação dos seis datasets e pipeline de treino implementados; a execução científica completa depende dos derivados locais e da alocação no cluster.",
+        "Preparation for all six datasets and the training pipeline are implemented; the complete scientific run depends on local derivatives and cluster allocation.",
+      ),
+      links: [{ kind: "repository", url: "https://github.com/MatheusFerraroni/queroquero" }],
+    },
+    {
+      id: "wackywacky",
+      name: "WackyWacky",
+      subtitle: text("Crawler experimental para construção controlada de corpus", "Experimental crawler for controlled corpus construction"),
+      description: text(
+        "Crawler web open source para exploração controlada, coleta de texto comprimido e observabilidade completa da execução.",
+        "An open-source web crawler for controlled exploration, compressed text collection, and full execution observability.",
+      ),
+      problem: text(
+        "Coletar páginas recursivamente sem perder controle sobre domínios, idioma, ritmo de acesso, falhas e volume armazenado.",
+        "Crawl pages recursively while retaining control over domains, language, access rate, failures, and stored volume.",
+      ),
+      contribution: text(
+        "Implementou trabalhadores concorrentes, filtros de domínio e idioma, limites de taxa e tentativas, persistência comprimida e telemetria de métricas, logs e traces.",
+        "Implemented concurrent workers, domain and language filters, rate and retry limits, compressed persistence, and telemetry for metrics, logs, and traces.",
+      ),
+      technologies: "Python, Playwright, MySQL, Docker, OpenTelemetry, Grafana, Loki, Prometheus, Jaeger",
+      status: text("Crawler experimental funcional e publicado como open source.", "Functional experimental crawler published as open source."),
+      links: [{ kind: "repository", url: "https://github.com/MatheusFerraroni/wackywacky" }],
+    },
+    {
+      id: "wackywacky-analysis",
+      name: "WackyWacky Analysis",
+      nameLanguage: "en",
+      subtitle: text("Análise de corpus em memória externa", "External-memory corpus analysis"),
+      description: text(
+        "Pacote independente para caracterizar cópias imutáveis do corpus WackyWacky sem carregar dezenas de gigabytes na memória.",
+        "A standalone package for characterizing immutable WackyWacky corpus snapshots without loading tens of gigabytes into memory.",
+      ),
+      problem: text(
+        "Validar, deduplicar e caracterizar um grande corpus textual com resultados retomáveis e auditáveis em hardware limitado.",
+        "Validate, deduplicate, and characterize a large text corpus with resumable and auditable results on constrained hardware.",
+      ),
+      contribution: text(
+        "Desenvolveu inventário, deduplicação exata, revisão de boilerplate, análise lexical e estrutural, checkpoints e geração determinística de tabelas e figuras.",
+        "Developed inventory, exact deduplication, boilerplate review, lexical and structural analysis, checkpoints, and deterministic table and figure generation.",
+      ),
+      technologies: "Python, Parquet, Zstandard, spaCy, Slurm",
+      status: text(
+        "Pipeline e visão principal B_clean_v2 implementados; a execução integral ocorre na processadora dedicada.",
+        "The pipeline and primary B_clean_v2 view are implemented; the complete run executes on the dedicated processing server.",
+      ),
+      links: [{ kind: "repository", url: "https://github.com/MatheusFerraroni/wackywacky-analysis" }],
+    },
+    {
+      id: "semantic-replace-with-federated-learning",
+      name: "Semantic Replace with Federated Learning",
+      nameLanguage: "en",
+      subtitle: text("Privacidade e reprodução de dados pessoais em aprendizado federado", "Privacy and personal-data reproduction in federated learning"),
+      description: text(
+        "Pesquisa experimental sobre reprodução direcionada de perfis pessoais sintéticos e mitigação de vazamento em treinamento federado de modelos de linguagem.",
+        "Experimental research on targeted reproduction of synthetic personal profiles and leakage mitigation in federated language-model training.",
+      ),
+      problem: text(
+        "Medir se um cliente adversário aumenta a reprodução de dados sensíveis e comparar defesas sob condições federadas controladas.",
+        "Measure whether an adversarial client increases sensitive-data reproduction and compare defenses under controlled federated conditions.",
+      ),
+      contribution: text(
+        "Implementou dados sintéticos, treinamento local, FedAvg, auditoria de extração, substituição semântica rotativa, DP-AdamW por conversa e pilotos retomáveis.",
+        "Implemented synthetic data, local training, FedAvg, extraction auditing, rotating semantic substitution, per-conversation DP-AdamW, and resumable pilots.",
+      ),
+      technologies: "Python, PyTorch, Hugging Face Transformers, Opacus, Slurm",
+      status: text(
+        "Piloto de substituição semântica concluído e aprovado em duas seeds; execução científica do piloto refinado com privacidade diferencial ainda pendente.",
+        "The semantic-substitution pilot completed and passed on two seeds; the refined differentially private scientific run remains pending.",
+      ),
+      links: [{ kind: "repository", url: "https://github.com/MatheusFerraroni/semantic-replace-with-fed-learning" }],
+    },
+    {
+      id: "visual-algo",
+      name: "Visual Algo",
+      nameLanguage: "en",
+      subtitle: text("Demonstrações interativas de algoritmos", "Interactive algorithm demonstrations"),
+      description: text(
+        "Coleção publicada de experiências visuais para explorar algoritmos, aprendizado de máquina e evolução neural diretamente no navegador.",
+        "A published collection of visual experiments for exploring algorithms, machine learning, and neural evolution directly in the browser.",
+      ),
+      problem: text(
+        "Tornar conceitos abstratos observáveis e manipuláveis em experiências didáticas sem instalação.",
+        "Make abstract concepts observable and adjustable through educational experiences that require no installation.",
+      ),
+      contribution: text(
+        "Criou e mantém demos de K-Means, perceptron, veículos neurais evoluídos e simulação evolutiva determinística.",
+        "Created and maintains demos for K-Means, perceptrons, evolved neural vehicles, and deterministic evolutionary simulation.",
+      ),
+      technologies: "JavaScript, HTML, CSS, p5.js, TensorFlow.js, Chart.js",
+      status: text("Publicado no GitHub Pages com demonstrações disponíveis.", "Published on GitHub Pages with live demonstrations."),
+      links: [
+        { kind: "repository", url: "https://github.com/MatheusFerraroni/visual_algo" },
+        { label: "Demo", url: "https://matheusferraroni.github.io/visual_algo/" },
+      ],
+    },
     {
       id: "rp-sim",
       name: "RP-Sim",
@@ -517,7 +682,7 @@ export const siteContent = Object.freeze({
     other: [
       { id: "orion-professional-recognition", year: "2025", description: text("Destaque Profissional por Iniciativa Criativa e Inovadora · Orion Sistemas Agrícolas.", "Professional recognition for creative and innovative initiative · Orion Sistemas Agrícolas.") },
       { id: "cygni-professional-recognition", year: "2016", description: text("Destaque Profissional por Iniciativa Criativa e Inovadora · CYGNI AgroCiência.", "Professional recognition for creative and innovative initiative · CYGNI AgroCiência.") },
-      { id: "regional-programming-fourth-place", year: "2014", description: text("Quarto colocado na fase regional de programação · Sociedade Brasileira de Computação.", "Fourth place in the regional programming contest · Sociedade Brasileira de Computação.") },
+      { id: "regional-programming-third-place", year: "2014", description: text("Terceiro colocado na fase regional de programação · Sociedade Brasileira de Computação.", "Third place in the regional programming contest · Sociedade Brasileira de Computação.") },
       { id: "univem-computing-olympiad", year: "2013", description: text("Primeiro colocado na olimpíada de informática para alunos do ensino médio promovida pelo UNIVEM.", "First place in UNIVEM’s computing olympiad for high school students.") },
     ],
   },

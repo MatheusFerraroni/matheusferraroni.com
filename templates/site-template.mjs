@@ -108,7 +108,14 @@ const renderPreviousExperience = (locale) =>
   siteContent.experience.previous
     .map(
       (experience) => `
-                <li id="experience-${escapeHtml(experience.id)}"><span class="font-semibold text-white">${escapeHtml(experience.organization)}</span> · ${text(experience.role, locale)} · ${text(experience.period, locale)}</li>`,
+                <li id="experience-${escapeHtml(experience.id)}">
+                  <p><span class="font-semibold text-white">${escapeHtml(experience.organization)}</span> · ${text(experience.role, locale)} · ${text(experience.period, locale)}</p>${
+                    experience.description
+                      ? `
+                  <p class="mt-1 text-slate-400">${text(experience.description, locale)}</p>`
+                      : ""
+                  }
+                </li>`,
     )
     .join("");
 
@@ -159,6 +166,10 @@ const renderEducation = (locale) =>
       const advisor = education.academicWork
         ? ""
         : ` ${text(siteContent.ui.advisor, locale)}: ${escapeHtml(education.advisor)}.`;
+      const description = education.description
+        ? `
+              <p class="mt-2 text-sm leading-7 text-slate-300 sm:text-base">${text(education.description, locale)}</p>`
+        : "";
 
       return `
             <div id="education-${escapeHtml(education.id)}" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
@@ -166,7 +177,7 @@ const renderEducation = (locale) =>
                 <h3 class="text-xl font-semibold text-white" id="education-${escapeHtml(education.id)}-degree">${text(education.degree, locale)}</h3>
                 <span class="text-sm text-sky-200/80">${text(education.period, locale)}</span>
               </div>
-              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${escapeHtml(education.institution)}.${advisor}</p>${renderAcademicWork(education, locale)}
+              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${escapeHtml(education.institution)}.${advisor}</p>${description}${renderAcademicWork(education, locale)}
             </div>`;
     })
     .join("");
@@ -203,7 +214,7 @@ const renderPublications = (locale) =>
                   (publication) => `
                 <div id="publication-${escapeHtml(publication.id)}">
                   <h3 class="text-lg font-semibold text-white"${languageAttribute(publication.titleLanguage, locale)}>${escapeHtml(publication.title)}</h3>
-                  <p class="mt-2">${escapeHtml(publication.venue)}${publication.description ? `. ${text(publication.description, locale)}` : ""}</p>${
+                  <p class="mt-2">${text(publication.venue, locale)}${publication.description ? `. ${text(publication.description, locale)}` : ""}</p>${
                     publication.link
                       ? `
                   <a class="mt-2 inline-block text-sm text-sky-200 transition hover:text-sky-100" href="${escapeHtml(publication.link.url)}"${analyticsAttributes(publication.id, "publication")}${externalLinkAttributes}>${escapeHtml(publication.link.label)}</a>`
@@ -217,6 +228,27 @@ const renderPublications = (locale) =>
     )
     .join("");
 
+const renderProjectDetails = (project, locale) => {
+  const details = [
+    [siteContent.ui.problem, project.problem],
+    [siteContent.ui.contribution, project.contribution],
+    [siteContent.ui.status, project.status],
+  ].filter(([, value]) => value);
+
+  if (!details.length) {
+    return "";
+  }
+
+  return `
+              <dl class="mt-4 grid gap-3 text-sm leading-7 text-slate-300">${details
+                .map(
+                  ([label, value]) => `
+                <div><dt class="inline font-semibold text-white">${text(label, locale)}:</dt> <dd class="inline">${text(value, locale)}</dd></div>`,
+                )
+                .join("")}
+              </dl>`;
+};
+
 const renderProjects = (locale) =>
   siteContent.projects
     .map(
@@ -224,7 +256,7 @@ const renderProjects = (locale) =>
             <div id="project-${escapeHtml(project.id)}" class="rounded-[1.5rem] border border-white/8 bg-white/3 p-5">
               <h3 class="text-xl font-semibold text-white"${languageAttribute(project.nameLanguage, locale)}>${escapeHtml(project.name)}</h3>
               <p class="mt-1 text-sm text-sky-200/80">${text(project.subtitle, locale)}</p>
-              <p class="mt-3 text-sm leading-7 text-slate-300">${text(project.description, locale)}</p>${
+              <p class="mt-3 text-sm leading-7 text-slate-300">${text(project.description, locale)}</p>${renderProjectDetails(project, locale)}${
                 project.technologies
                   ? `
               <p class="mt-3 text-sm leading-7 text-slate-300">${text(siteContent.ui.technologies, locale)}: ${escapeHtml(project.technologies)}.</p>`
