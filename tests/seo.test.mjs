@@ -24,9 +24,9 @@ const pages = [
     locale: "pt-BR",
     path: "index.html",
     canonical: `${siteOrigin}/`,
-    title: "Matheus Ferraroni Sanches | CTO e Pesquisador em IA",
+    title: "Matheus Ferraroni Sanches | CTO, P&D e Inteligência Artificial",
     description:
-      "Matheus Ferraroni Sanches é CTO, professor e pesquisador em Ciência da Computação, com atuação em IA, agtech, NLP, privacidade e sensoriamento remoto.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
     ogLocale: "pt_BR",
     socialCard: `${siteOrigin}/assets/image/social-card-pt-br.png`,
     linkedinUnavailable: "LinkedIn desativado temporariamente",
@@ -36,9 +36,9 @@ const pages = [
     locale: "en",
     path: "en/index.html",
     canonical: `${siteOrigin}/en/`,
-    title: "Matheus Ferraroni Sanches | CTO and AI Researcher",
+    title: "Matheus Ferraroni Sanches | CTO, R&D and Artificial Intelligence",
     description:
-      "Matheus Ferraroni Sanches is a CTO, professor and computer science researcher working on AI, agtech, NLP, privacy and remote sensing.",
+      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
     ogLocale: "en_US",
     socialCard: `${siteOrigin}/assets/image/social-card-en.png`,
     linkedinUnavailable: "LinkedIn temporarily unavailable",
@@ -252,11 +252,13 @@ for (const page of pages) {
     );
     assert.equal(htmlTag.attributes.get("lang"), page.locale);
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
-    assert.equal(html.match(/<title>([^<]+)<\/title>/)?.[1], page.title);
-    assert.equal(description?.attributes.get("content"), page.description);
+    const escapedTitle = page.title.replaceAll("&", "&amp;");
+    const escapedDescription = page.description.replaceAll("&", "&amp;");
+    assert.equal(html.match(/<title>([^<]+)<\/title>/)?.[1], escapedTitle);
+    assert.equal(description?.attributes.get("content"), escapedDescription);
     assert.equal(canonical?.attributes.get("href"), page.canonical);
-    assert.equal(ogTitle?.attributes.get("content"), page.title);
-    assert.equal(ogDescription?.attributes.get("content"), page.description);
+    assert.equal(ogTitle?.attributes.get("content"), escapedTitle);
+    assert.equal(ogDescription?.attributes.get("content"), escapedDescription);
     assert.equal(ogUrl?.attributes.get("content"), page.canonical);
     assert.equal(ogLocale?.attributes.get("content"), page.ogLocale);
     assert.equal(
@@ -268,8 +270,8 @@ for (const page of pages) {
     assert.equal(ogImageHeight?.attributes.get("content"), "630");
     assert.ok(ogImageAlt?.attributes.get("content"));
     assert.equal(twitterCard?.attributes.get("content"), "summary_large_image");
-    assert.equal(twitterTitle?.attributes.get("content"), page.title);
-    assert.equal(twitterDescription?.attributes.get("content"), page.description);
+    assert.equal(twitterTitle?.attributes.get("content"), escapedTitle);
+    assert.equal(twitterDescription?.attributes.get("content"), escapedDescription);
     assert.equal(twitterImage?.attributes.get("content"), page.socialCard);
     assert.equal(themeColor?.attributes.get("content"), "#020617");
     assert.equal(linkedinLink?.attributes.get("aria-disabled"), "true");
@@ -475,7 +477,9 @@ test("professional history and awards expose the confirmed corrections and resul
     (entry) => entry.id === "cit-data-scientist"
   );
   const cygni = siteContent.experience.current.find((entry) => entry.id === "cygni-cto");
+  const cygniTechLead = siteContent.experience.previous.find((entry) => entry.id === "cygni-tech-lead");
   const orion = siteContent.experience.current.find((entry) => entry.id === "orion-cto");
+  const initialOrion = siteContent.experience.current.find((entry) => entry.id === "orion-cto-initial");
   const programmingAward = siteContent.awards.other.find(
     (entry) => entry.id === "regional-programming-third-place"
   );
@@ -486,12 +490,27 @@ test("professional history and awards expose the confirmed corrections and resul
   );
   assert.equal(clickideia?.role.en, "Software Developer — FAPESP Technical Training Fellow");
   assert.match(sumup?.description["pt-BR"], /milhões de dólares/);
-  assert.match(cit?.description["pt-BR"], /15%/);
-  assert.match(cygni?.description["pt-BR"], /10%/);
-  assert.match(cygni?.description["pt-BR"], /duplicaram a velocidade de processamento/);
-  assert.match(orion?.description["pt-BR"], /CINTEC/);
-  assert.match(orion?.description["pt-BR"], /tecnologia da CYGNI AgroScience/);
-  assert.match(orion?.description["pt-BR"], /sem exercer a direção do laboratório/);
+  assert.match(cit?.description["pt-BR"], /15 pontos percentuais a métrica agregada/);
+  assert.match(cit?.description.en, /aggregate evaluation metric by 15 percentage points/);
+  assert.doesNotMatch(cit.description["pt-BR"], /acurácia|15%/);
+  assert.doesNotMatch(cit.description.en, /accuracy|15%/);
+  assert.doesNotMatch(cygni?.description["pt-BR"], /10%|duplicou/);
+  assert.doesNotMatch(cygni?.description.en, /10%|doubled/);
+  assert.match(cygniTechLead?.description["pt-BR"], /10%/);
+  assert.match(cygniTechLead?.description["pt-BR"], /duplicou a velocidade de processamento/);
+  assert.match(cygniTechLead?.description.en, /10% and doubled processing speed/);
+  assert.equal(cygniTechLead?.period["pt-BR"], "Dez/2019 – Ago/2020");
+  assert.equal(orion?.period["pt-BR"], "Jul/2025, atual");
+  assert.equal(orion?.period.en, "Jul 2025–present");
+  assert.equal(initialOrion?.period["pt-BR"], "Abr/2025 – Jun/2025");
+  assert.equal(initialOrion?.period.en, "Apr 2025–Jun 2025");
+  const orionHighlights = orion.highlights.map((highlight) => highlight["pt-BR"]).join(" ");
+  assert.match(orionHighlights, /CINTEC/);
+  assert.match(orionHighlights, /cinco profissionais/);
+  assert.match(orionHighlights, /Coordena a pesquisa em biológicos integrada aos projetos do CINTEC/);
+  assert.match(orionHighlights, /MCP/);
+  assert.match(orionHighlights, /SAP com cerca de 20 líderes/);
+  assert.match(orionHighlights, /CAP\/FAE/);
   assert.match(programmingAward?.description["pt-BR"], /Terceiro colocado/);
   assert.match(programmingAward?.description.en, /Third place/);
   assert.ok(!siteContent.awards.other.some((entry) => entry.id.includes("fourth-place")));
@@ -502,6 +521,17 @@ test("professional history and awards expose the confirmed corrections and resul
     assert.ok(html.includes(page.locale === "pt-BR" ? "Trabalho:" : "Work:"));
     assert.ok(html.includes(clickideia.role[page.locale]));
     assert.ok(html.includes(programmingAward.description[page.locale]));
+    const citRendered = textFromElementById(html, "experience-cit-data-scientist");
+    assert.match(citRendered, page.locale === "pt-BR" ? /15 pontos percentuais/ : /15 percentage points/);
+    const techLeadRendered = textFromElementById(html, "experience-cygni-tech-lead");
+    assert.match(techLeadRendered, /10%/);
+    assert.match(techLeadRendered, page.locale === "pt-BR" ? /duplicou/ : /doubled/);
+    assert.ok(html.includes(orion.period[page.locale]));
+    assert.ok(html.includes(initialOrion.period[page.locale]));
+    for (const highlight of orion.highlights) {
+      assert.ok(html.includes(highlight[page.locale]
+        .replaceAll("&", "&amp;").replaceAll("'", "&#39;")));
+    }
   }
 });
 
@@ -565,7 +595,9 @@ test("doctoral research, teaching, languages, and selected publications are curr
   assert.equal(phd?.period["pt-BR"], "2020, em andamento");
   assert.match(phd?.description["pt-BR"], /26 de outubro de 2026/);
   assert.match(phd?.description["pt-BR"], /Mitigação de Vazamento em Aprendizado Federado/);
-  assert.match(fbmCourse?.role["pt-BR"], /Python para Finanças \(18 horas\)/);
+  assert.match(fbmCourse?.role["pt-BR"], /Python e IA para Finanças \(18 horas\)/);
+  assert.equal(fbmCourse?.period["pt-BR"], "Out/2025");
+  assert.equal(fbmCourse?.period.en, "Oct 2025");
   assert.equal(languages?.value["pt-BR"], "Português nativo · Inglês fluente");
   assert.equal(languages?.value.en, "Native Portuguese · Fluent English");
   assert.equal(efis?.link?.url, "https://doi.org/10.1109/DCOSS52077.2021.00032");
@@ -577,6 +609,8 @@ test("doctoral research, teaching, languages, and selected publications are curr
     const html = readRepositoryFile(page.path);
     assert.ok(html.includes(phd.description[page.locale]));
     assert.ok(html.includes(fbmCourse.role[page.locale]));
+    assert.ok(textFromElementById(html, "experience-fbm-python-finance-instructor")
+      .includes(fbmCourse.period[page.locale]));
     assert.ok(html.includes(languages.value[page.locale]));
     assert.ok(html.includes(efis.link.label));
     assert.ok(html.includes(sbpo.title));

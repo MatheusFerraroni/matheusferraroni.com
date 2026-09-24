@@ -99,7 +99,16 @@ const renderCurrentExperience = (locale) =>
                 <h3 class="text-xl font-semibold text-white">${text(experience.role, locale)}</h3>
                 <span class="text-sm text-sky-200/80">${text(experience.period, locale)}</span>
               </div>
-              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${text(experience.description, locale)}</p>
+              <p class="mt-3 text-sm leading-7 text-slate-300 sm:text-base">${text(experience.description, locale)}</p>${
+                experience.highlights?.length
+                  ? `
+              <ul class="mt-3 list-disc space-y-3 pl-5 text-sm leading-7 text-slate-300 sm:text-base">${experience.highlights
+                .map((highlight) => `
+                <li>${text(highlight, locale)}</li>`)
+                .join("")}
+              </ul>`
+                  : ""
+              }
             </div>`,
     )
     .join("");
@@ -432,7 +441,8 @@ ${renderLanguageNavigation(locale)}
         <div class="mt-10 grid max-w-6xl gap-10 lg:grid-cols-[1.35fr_0.85fr] lg:items-end">
           <div>
             <h1 class="max-w-5xl text-5xl font-semibold tracking-[-0.06em] text-white sm:text-7xl lg:text-8xl">${escapeHtml(siteContent.person.name)}</h1>
-            <p class="mt-6 max-w-4xl text-justify text-base leading-8 text-slate-200/90 sm:text-lg">${text(siteContent.person.summary, locale)}</p>
+            <p class="mt-5 text-lg font-medium leading-8 text-sky-200 sm:text-xl">${text(siteContent.person.headline, locale)}</p>
+            <p class="mt-6 max-w-4xl text-base leading-8 text-slate-200/90 sm:text-lg">${text(siteContent.person.summary, locale)}</p>
             <div class="mt-8 flex flex-wrap gap-3">${renderTopics(locale)}
             </div>
           </div>

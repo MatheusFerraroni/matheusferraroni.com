@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
-  <title id="title">Matheus Ferraroni Sanches — CTO, Professor e Pesquisador em IA</title>
+  <title id="title">Matheus Ferraroni Sanches — CTO, Diretor de P&amp;D e Inteligência Artificial</title>
   <desc id="description">Card social em tons de azul profundo, com acentos ciano e âmbar e uma rede sutil de partículas.</desc>
   <defs>
     <linearGradient id="background" x1="60" y1="32" x2="1140" y2="598" gradientUnits="userSpaceOnUse">
@@ -77,7 +77,7 @@
 
   <rect x="88" y="236" width="424" height="5" rx="2.5" fill="url(#accent-line)"/>
   <text x="88" y="335" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="63" font-weight="700" letter-spacing="-1.8">Matheus Ferraroni Sanches</text>
-  <text x="91" y="401" fill="#CFFAFE" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500" letter-spacing="0.1">CTO · Professor · Pesquisador em IA</text>
+  <text x="91" y="401" fill="#CFFAFE" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="500" letter-spacing="0.1">CTO · Diretor de P&amp;D · Inteligência Artificial</text>
 
   <g transform="translate(88 551)">
     <circle cx="5" cy="0" r="5" fill="#22D3EE"/>

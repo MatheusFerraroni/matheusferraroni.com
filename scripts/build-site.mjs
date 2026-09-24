@@ -82,14 +82,14 @@ validateContent(siteContent);
 
 const expectedMetadata = {
   "pt-BR": {
-    title: "Matheus Ferraroni Sanches | CTO e Pesquisador em IA",
+    title: "Matheus Ferraroni Sanches | CTO, P&D e Inteligência Artificial",
     description:
-      "Matheus Ferraroni Sanches é CTO, professor e pesquisador em Ciência da Computação, com atuação em IA, agtech, NLP, privacidade e sensoriamento remoto.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
   },
   en: {
-    title: "Matheus Ferraroni Sanches | CTO and AI Researcher",
+    title: "Matheus Ferraroni Sanches | CTO, R&D and Artificial Intelligence",
     description:
-      "Matheus Ferraroni Sanches is a CTO, professor and computer science researcher working on AI, agtech, NLP, privacy and remote sensing.",
+      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
   },
 };
 

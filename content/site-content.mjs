@@ -7,27 +7,36 @@ export const siteContent = Object.freeze({
     id: "matheus-ferraroni-sanches",
     name: "Matheus Ferraroni Sanches",
     title: text(
-      "Matheus Ferraroni Sanches | CTO e Pesquisador em IA",
-      "Matheus Ferraroni Sanches | CTO and AI Researcher",
+      "Matheus Ferraroni Sanches | CTO, P&D e Inteligência Artificial",
+      "Matheus Ferraroni Sanches | CTO, R&D and Artificial Intelligence",
+    ),
+    headline: text(
+      "CTO | Liderança em Tecnologia e P&D | Inteligência Artificial",
+      "CTO | Technology and R&D Leadership | Artificial Intelligence",
     ),
     description: text(
-      "Matheus Ferraroni Sanches é CTO, professor e pesquisador em Ciência da Computação, com atuação em IA, agtech, NLP, privacidade e sensoriamento remoto.",
-      "Matheus Ferraroni Sanches is a CTO, professor and computer science researcher working on AI, agtech, NLP, privacy and remote sensing.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
+      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
     ),
     summary: text(
-      "CTO e diretor de P&D do Grupo Orion Sistemas Agrícolas, onde lidera o desenvolvimento de novas máquinas, equipamentos agrícolas, soluções tecnológicas e plataformas de dados geoespaciais para apoio à tomada de decisão no campo. É professor dos cursos de Ciência da Computação e Inteligência Artificial na Unimar e doutorando em Ciência da Computação pela Unicamp.",
-      "CTO and R&D Director at Grupo Orion Sistemas Agrícolas, where he leads the development of new machinery, agricultural equipment, technology solutions, and geospatial data platforms to support decision-making in the field. He is a professor in the Computer Science and Artificial Intelligence programs at Unimar and a PhD candidate in Computer Science at Unicamp.",
+      "CTO e diretor de P&D do Grupo Orion, responsável pela estratégia tecnológica, portfólio de inovação, transformação digital e adoção corporativa de IA. Forma equipes multidisciplinares e lidera o desenvolvimento de produtos que integram software, hardware e engenharia, com profundidade técnica em cloud, sistemas distribuídos e modelos de linguagem. É professor na Unimar, mestre e doutorando em Ciência da Computação pela Unicamp.",
+      "CTO and R&D Director at Grupo Orion, responsible for technology strategy, the innovation portfolio, digital transformation and enterprise AI adoption. Builds multidisciplinary teams and leads product development spanning software, hardware and engineering, with technical depth in cloud, distributed systems and language models. A professor at Unimar, he holds a master's degree and is pursuing a PhD in Computer Science at Unicamp.",
     ),
     socialCardAlt: text(
-      "Matheus Ferraroni Sanches — CTO, professor e pesquisador em IA",
-      "Matheus Ferraroni Sanches — CTO, professor, and AI researcher",
+      "Matheus Ferraroni Sanches — CTO, diretor de P&D e Inteligência Artificial",
+      "Matheus Ferraroni Sanches — CTO, R&D Director and Artificial Intelligence",
     ),
     jobTitles: text(
-      ["Diretor de Tecnologia (CTO)", "Professor", "Pesquisador em Ciência da Computação"],
-      ["Chief Technology Officer (CTO)", "Professor", "Computer Science Researcher"],
+      ["Diretor de Tecnologia (CTO)", "Diretor de P&D", "Professor", "Pesquisador em Ciência da Computação"],
+      ["Chief Technology Officer (CTO)", "R&D Director", "Professor", "Computer Science Researcher"],
     ),
     knowsAbout: text(
       [
+        "Estratégia tecnológica",
+        "Gestão de portfólio de P&D",
+        "Adoção corporativa de IA",
+        "Desenvolvimento de produtos",
+        "Arquitetura em nuvem e sistemas distribuídos",
         "Inteligência artificial",
         "Agtech",
         "Processamento de linguagem natural",
@@ -38,6 +47,11 @@ export const siteContent = Object.freeze({
         "Redes veiculares",
       ],
       [
+        "Technology strategy",
+        "R&D portfolio management",
+        "Enterprise AI adoption",
+        "Product development",
+        "Cloud architecture and distributed systems",
         "Artificial intelligence",
         "Agtech",
         "Natural language processing",
@@ -130,7 +144,7 @@ export const siteContent = Object.freeze({
   sectionTitles: {
     experience: text("Histórico profissional", "Professional experience"),
     education: text("Histórico acadêmico", "Education"),
-    skills: text("Habilidades", "Skills"),
+    skills: text("Competências e idiomas", "Skills and languages"),
     publications: text("Publicações selecionadas", "Selected publications"),
     projects: text("Projetos", "Projects"),
     awards: text("Prêmios e reconhecimentos", "Awards and recognition"),
@@ -141,19 +155,15 @@ export const siteContent = Object.freeze({
   },
 
   topics: [
+    { id: "technology-leadership", label: text("Liderança em tecnologia", "Technology Leadership") },
+    { id: "research-and-development", label: text("Pesquisa e Desenvolvimento (P&D)", "Research and Development (R&D)") },
+    { id: "enterprise-ai", label: text("IA corporativa", "Enterprise AI") },
+    { id: "product-development", label: text("Desenvolvimento de produtos", "Product Development") },
+    { id: "cloud-architecture", label: text("Cloud e sistemas distribuídos", "Cloud and Distributed Systems") },
+    { id: "agtech", label: text("Agritech", "Agritech") },
     { id: "natural-language-processing", label: text("Processamento de Linguagem Natural", "Natural Language Processing") },
-    { id: "agtech", label: text("Agtech", "Agtech") },
     { id: "llm-privacy", label: text("Privacidade e segurança em LLMs", "LLM Privacy and Security") },
     { id: "federated-learning", label: text("Aprendizado Federado", "Federated Learning") },
-    { id: "optimization", label: text("Otimização", "Optimization") },
-    { id: "remote-sensing", label: text("Sensoriamento remoto", "Remote Sensing") },
-    { id: "vehicular-networks", label: text("Redes veiculares", "Vehicular Networks") },
-    { id: "wireless-communication", label: text("Comunicação sem fio", "Wireless Communication") },
-    { id: "research-and-development", label: text("Pesquisa e Desenvolvimento (P&D)", "Research and Development (R&D)") },
-    { id: "technological-innovation", label: text("Inovação tecnológica", "Technological Innovation") },
-    { id: "precision-agriculture", label: text("Agricultura de precisão", "Precision Agriculture") },
-    { id: "geospatial-data", label: text("Dados geoespaciais", "Geospatial Data") },
-    { id: "digital-transformation-agribusiness", label: text("Transformação digital no agronegócio", "Digital Transformation in Agribusiness") },
   ],
 
   links: {
@@ -185,10 +195,44 @@ export const siteContent = Object.freeze({
           "Diretor de Tecnologia (CTO) e Diretor de P&D, Grupo Orion Sistemas Agrícolas",
           "Chief Technology Officer (CTO) and R&D Director, Grupo Orion Sistemas Agrícolas",
         ),
-        period: text("Jun/2025, atual", "Jun 2025–present"),
+        period: text("Jul/2025, atual", "Jul 2025–present"),
         description: text(
-          "Responsável pelas diretorias de Tecnologia e Pesquisa & Desenvolvimento do Grupo Orion Sistemas Agrícolas, pelo CINTEC e pela tecnologia da CYGNI AgroScience. Lidera a estratégia tecnológica e o desenvolvimento de máquinas, equipamentos agrícolas, soluções digitais e plataformas de dados geoespaciais. Também colabora tecnicamente com os experimentos do laboratório de biologia, sem exercer a direção do laboratório.",
-          "Leads the Technology and Research & Development divisions at Grupo Orion Sistemas Agrícolas and is responsible for CINTEC and technology at CYGNI AgroScience. He drives technology strategy and the development of machinery, agricultural equipment, digital solutions, and geospatial data platforms. He also contributes technology expertise to experiments conducted by the biology laboratory without directing the laboratory.",
+          "Lidera a tecnologia nas empresas do Grupo Orion, definindo roadmap, arquitetura e padrões de software, hardware, cloud e infraestrutura, além da estratégia da plataforma digital da CYGNI AgroScience.",
+          "Leads technology across Grupo Orion companies, defining the roadmap, architecture and standards for software, hardware, cloud and infrastructure, as well as the strategy for CYGNI AgroScience's digital platform.",
+        ),
+        highlights: [
+          text(
+            "Estruturou do zero o CINTEC (Centro de Inovação e Tecnologia), com uma equipe multidisciplinar de cinco profissionais. Dirige o portfólio de P&D, define prioridades com a presidência e planeja investimentos, recursos e marcos de desenvolvimento conforme o calendário das safras.",
+            "Built CINTEC (Innovation and Technology Center) from the ground up with a multidisciplinary team of five. Directs the R&D portfolio, sets priorities with the company's leadership and plans investments, resources and development milestones around the crop calendar.",
+          ),
+          text(
+            "No primeiro ano à frente do CINTEC, conduziu o desenvolvimento de máquinas agrícolas, sistemas embarcados e instrumentação: um protótipo entregue a cliente parceiro para testes, dois sistemas em testes de campo e dois equipamentos laboratoriais prontos para uso.",
+            "In his first year leading CINTEC, guided the development of agricultural machinery, embedded systems and instrumentation: one prototype delivered to a partner customer for testing, two systems in field trials and two laboratory devices ready for use.",
+          ),
+          text(
+            "Lidera a adoção corporativa de IA, com diretrizes de uso seguro, capacitação e integração de modelos aos sistemas internos via MCP. Incorporou IA a fluxos de engenharia, como o roteamento automatizado de mangueiras hidráulicas.",
+            "Leads enterprise AI adoption through safe-use guidelines, training and model integration with internal systems via MCP. Incorporated AI into engineering workflows, including automated hydraulic hose routing.",
+          ),
+          text(
+            "Coordena a pesquisa em biológicos integrada aos projetos do CINTEC, apoiando o refinamento de protocolos e organizando pessoas, cronogramas e recursos de ensaios que já validaram parâmetros adotados em equipamentos de aplicação.",
+            "Coordinates biological research integrated with CINTEC projects, supporting protocol refinement and organizing people, schedules and trial resources. These trials have validated parameters adopted in application equipment.",
+          ),
+          text(
+            "Lidera a implantação do SAP com cerca de 20 líderes da fábrica e do escritório, respondendo por planejamento, escopo, atividades, prazos e entregas. Implantou o fluxo CAP/FAE para controle de alterações de engenharia entre as áreas envolvidas.",
+            "Leads the SAP implementation with around 20 factory and office leaders, taking responsibility for planning, scope, activities, deadlines and deliverables. Introduced the CAP/FAE workflow to control engineering changes across the teams involved.",
+          ),
+        ],
+      },
+      {
+        id: "orion-cto-initial",
+        role: text(
+          "Diretor de Tecnologia (CTO), Grupo Orion Sistemas Agrícolas",
+          "Chief Technology Officer (CTO), Grupo Orion Sistemas Agrícolas",
+        ),
+        period: text("Abr/2025 – Jun/2025", "Apr 2025–Jun 2025"),
+        description: text(
+          "Assumiu a liderança de tecnologia das empresas do Grupo Orion, ampliando a responsabilidade anteriormente concentrada na CYGNI e passando a responder pelo roadmap tecnológico, arquitetura, sistemas e iniciativas de transformação digital do grupo.",
+          "Took on technology leadership across Grupo Orion companies, expanding responsibilities previously focused on CYGNI to cover the group's technology roadmap, architecture, systems and digital transformation initiatives.",
         ),
       },
       {
@@ -199,8 +243,8 @@ export const siteContent = Object.freeze({
         ),
         period: text("Jan/2025, atual", "Jan 2025–present"),
         description: text(
-          "Professor universitário nas áreas de Inteligência Artificial, Ciência da Computação e Sistemas de Informação. Atua em disciplinas relacionadas a Inteligência Artificial, aprendizado de máquina, algoritmos e estruturas de dados, conectando fundamentos teóricos e aplicações práticas para o desenvolvimento de soluções tecnológicas inovadoras.",
-          "University professor in Artificial Intelligence, Computer Science, and Information Systems. Teaches courses related to artificial intelligence, machine learning, algorithms, and data structures, connecting theoretical foundations with practical applications to develop innovative technology solutions.",
+          "Docência nos cursos de Ciência da Computação, Inteligência Artificial e Sistemas de Informação, com disciplinas de IA, aprendizado de máquina, algoritmos e estruturas de dados. Orienta dois projetos de iniciação científica.",
+          "Teaches in Computer Science, Artificial Intelligence and Information Systems programs, covering AI, machine learning, algorithms and data structures. Supervises two undergraduate research projects.",
         ),
       },
       {
@@ -211,9 +255,15 @@ export const siteContent = Object.freeze({
         ),
         period: text("Set/2020 – Jun/2025", "Sep 2020–Jun 2025"),
         description: text(
-          "Responsável pela estratégia tecnológica, arquitetura de software e liderança das equipes de desenvolvimento, conduziu a evolução de plataformas de sensoriamento remoto e análise geoespacial baseadas em imagens de satélite. As melhorias reduziram custos em 10% e duplicaram a velocidade de processamento.",
-          "Led technology strategy, software architecture, and development teams while evolving remote-sensing and geospatial-analysis platforms based on satellite imagery. The improvements reduced costs by 10% and doubled processing speed.",
+          "Liderou cerca de 10 profissionais de desenvolvimento e geoprocessamento, com responsabilidade por tecnologia e produto, roadmap, contratações, infraestrutura e parcerias. Concebeu e implementou uma arquitetura em nuvem sob demanda que reduziu o processamento de milhares de imagens de satélite por talhão de horas para poucos minutos, diminuindo significativamente o custo operacional.",
+          "Led around 10 development and geospatial professionals, with responsibility for technology, product, the roadmap, hiring, infrastructure and partnerships. Designed and implemented an on-demand cloud architecture that cut processing time for thousands of satellite images per field from hours to a few minutes, significantly reducing operating costs.",
         ),
+        highlights: [
+          text(
+            "Evoluiu a plataforma com 14 índices de vegetação, solo e umidade, análises temporais e identificação de anomalias. Conectou imagens de satélite à coleta georreferenciada e à geração de mapas de aplicação em taxa variável utilizados em equipamentos da Orion.",
+            "Expanded the platform with 14 vegetation, soil and moisture indices, temporal analysis and anomaly detection. Connected satellite imagery to georeferenced field data collection and variable-rate application maps used in Orion equipment.",
+          ),
+        ],
       },
     ],
     previous: [
@@ -223,25 +273,43 @@ export const siteContent = Object.freeze({
         role: text("Engenheiro de Software Sênior", "Senior Software Engineer"),
         period: text("Jun/2022 – Jun/2025", "Jun 2022–Jun 2025"),
         description: text(
-          "Entregou iniciativas de engenharia que geraram economia anual de milhões de dólares.",
-          "Delivered engineering initiatives that generated millions of dollars in annual savings.",
+          "Concebeu e implementou uma solução de otimização para venda e alocação de recebíveis, gerando economia anual de milhões de dólares após validação da tesouraria. Foi o principal responsável técnico pelos sistemas de DIMP e DECRED e atuou na arquitetura e implementação de reconciliação em streaming para milhões de transações por dia. Contribuiu para a formação da tecnologia de Finanças Brasil, com contratação, padrões de engenharia, mentoria e capacitação de profissionais de finanças.",
+          "Designed and implemented a solution to optimize receivables sales and allocation, generating millions of dollars in annual savings following treasury validation. Was the main technical owner of the DIMP and DECRED systems and worked on the architecture and implementation of streaming reconciliation for millions of transactions per day. Helped build the Brazil Finance technology function through hiring, engineering standards, mentoring and training finance professionals.",
         ),
       },
       {
         id: "cit-data-scientist",
-        organization: "CI&T Software",
-        role: text("Cientista de Dados/Pesquisador", "Data Scientist/Researcher"),
+        organization: "CI&T",
+        role: text("Cientista de Dados", "Data Scientist"),
         period: text("Fev/2021 – Set/2022", "Feb 2021–Sep 2022"),
         description: text(
-          "Desenvolveu uma solução de ciência de dados que melhorou a acurácia em 15%.",
-          "Developed a data-science solution that improved accuracy by 15%.",
+          "Desenvolveu de ponta a ponta um pipeline de análise de percepção de marca com dados de redes sociais, avaliações, pesquisas e notícias. Refinou BERT para a linguagem informal de redes sociais, incluindo gírias e variações linguísticas, elevando em 15 pontos percentuais a métrica agregada de avaliação do projeto.",
+          "Developed an end-to-end brand perception analysis pipeline using social media, reviews, surveys and news. Refined BERT for informal social media language, including slang and linguistic variations, increasing the project's aggregate evaluation metric by 15 percentage points.",
         ),
       },
-      { id: "cygni-tech-lead", organization: "CYGNI AgroScience", role: text("Líder técnico", "Tech Lead"), period: text("Dez/2019 – Ago/2020", "Dec 2019–Aug 2020") },
+      {
+        id: "cygni-tech-lead",
+        organization: "CYGNI AgroScience",
+        role: text("Líder técnico", "Tech Lead"),
+        period: text("Dez/2019 – Ago/2020", "Dec 2019–Aug 2020"),
+        description: text(
+          "Liderou tecnicamente uma equipe de 3 a 4 profissionais na primeira arquitetura de alto desempenho em nuvem da CYGNI, completando a migração de etapas manuais ou locais. A nova arquitetura reduziu em 10% os custos e duplicou a velocidade de processamento, com resultados medidos em produção.",
+          "Provided technical leadership to a team of 3 to 4 on CYGNI's first high-performance cloud architecture, completing the migration of manual or local processing steps. The new architecture reduced costs by 10% and doubled processing speed, with results measured in production.",
+        ),
+      },
       { id: "clickideia-software-developer", organization: "Clickideia Tecnologia Educacional", role: text("Desenvolvedor de Software — Bolsista FAPESP (Treinamento Técnico)", "Software Developer — FAPESP Technical Training Fellow"), period: text("Dez/2018 – Nov/2019", "Dec 2018–Nov 2019") },
       { id: "cygni-it-manager", organization: "CYGNI AgroScience", role: text("Gerente de TI", "IT Manager"), period: text("Ago/2016 – Nov/2018", "Aug 2016–Nov 2018") },
       { id: "univem-cnpq-researcher", organization: "Centro Universitário Eurípides de Marília, UNIVEM", role: text("Pesquisador CNPq", "CNPq Researcher"), period: text("Jan/2015 – Jul/2016", "Jan 2015–Jul 2016") },
-      { id: "fbm-python-finance-instructor", organization: "FBM", role: text("Professor convidado — Python para Finanças (18 horas)", "Guest Instructor — Python for Finance (18 hours)"), period: "2024" },
+      {
+        id: "fbm-python-finance-instructor",
+        organization: "FBM Educação",
+        role: text("Instrutor de Python e IA para Finanças (18 horas)", "Python and AI for Finance Instructor (18 hours)"),
+        period: text("Out/2025", "Oct 2025"),
+        description: text(
+          "Ministrou curso ao vivo para profissionais de finanças, combinando Python e IA generativa para capacitar não programadores a construir ferramentas e automações para suas próprias rotinas.",
+          "Delivered a live course for finance professionals, combining Python and generative AI to help non-programmers build tools and automate their own workflows.",
+        ),
+      },
     ],
   },
 
@@ -331,19 +399,64 @@ export const siteContent = Object.freeze({
 
   skillGroups: [
     {
-      id: "engineering",
+      id: "leadership-and-ai",
       items: [
-        { id: "programming", label: text("Programação", "Programming"), value: "Python, PHP, JavaScript, Elixir, C++, Go" },
-        { id: "tools", label: text("Ferramentas", "Tools"), value: "Git, Docker, Google Maps JS, Jupyter, Scikit-learn, NumPy, Pandas, Matplotlib, Seaborn, NLTK, DBT" },
-        { id: "aws", label: text("Nuvem AWS", "AWS Cloud"), value: "Lambda, EC2, S3, DynamoDB, CodeCommit, Elastic Beanstalk, EFS, RDS, API Gateway" },
+        {
+          id: "leadership-and-research",
+          label: text("Liderança e P&D", "Leadership and R&D"),
+          value: text(
+            "Estratégia tecnológica, gestão de portfólio de P&D e roadmap de inovação, priorização de projetos e recursos, planejamento de investimentos, formação e liderança de equipes multidisciplinares, contratação, gestão por meio de líderes, mentoria e transformação digital.",
+            "Technology strategy, R&D portfolio management and innovation roadmaps, project and resource prioritization, investment planning, building and leading multidisciplinary teams, hiring, managing through team leaders, mentoring and digital transformation.",
+          ),
+        },
+        {
+          id: "artificial-intelligence",
+          label: text("Inteligência artificial", "Artificial intelligence"),
+          value: text(
+            "LLMs e transformers, fine-tuning, pré-treinamento continuado, construção e curadoria de datasets, avaliação de modelos, RAG, agentes de IA, embeddings, aprendizado federado, privacidade diferencial e aumento de dados.",
+            "LLMs and transformers, fine-tuning, continued pretraining, dataset construction and curation, model evaluation, RAG, AI agents, embeddings, federated learning, differential privacy and data augmentation.",
+          ),
+        },
+        {
+          id: "applied-ai-and-adoption",
+          label: text("IA aplicada e adoção", "Applied AI and adoption"),
+          value: text(
+            "Adoção corporativa e governança de IA, IA generativa aplicada a engenharia e software, prompt engineering e integração de modelos de linguagem a sistemas corporativos via MCP.",
+            "Enterprise AI adoption and governance, generative AI for engineering and software, prompt engineering and language model integration with enterprise systems via MCP.",
+          ),
+        },
+        {
+          id: "multidisciplinary-research",
+          label: text("P&D multidisciplinar", "Multidisciplinary R&D"),
+          value: text(
+            "Desenvolvimento de produtos integrando software, hardware, sistemas embarcados e engenharia mecânica, com definição de requisitos, prototipagem e validação.",
+            "Product development integrating software, hardware, embedded systems and mechanical engineering, including requirements definition, prototyping and validation.",
+          ),
+        },
       ],
     },
     {
-      id: "data-and-collaboration",
+      id: "architecture-and-data",
       items: [
-        { id: "databases", label: text("Bancos de dados", "Databases"), value: "SQL, NoSQL, DynamoDB, PostgreSQL, Snowflake" },
+        {
+          id: "aws",
+          label: text("Cloud e arquitetura", "Cloud and architecture"),
+          value: text(
+            "AWS, sistemas distribuídos e de alta escala, arquiteturas serverless e orientadas a eventos, processamento paralelo e concorrente, Docker, CI/CD, Linux, mensageria, APIs e otimização de custos em nuvem.",
+            "AWS, large-scale distributed systems, serverless and event-driven architectures, parallel and concurrent processing, Docker, CI/CD, Linux, messaging, APIs and cloud cost optimization.",
+          ),
+        },
+        { id: "databases", label: text("Dados e persistência", "Data and persistence"), value: "PostgreSQL, MongoDB, DynamoDB, Snowflake, Redis" },
+        {
+          id: "geospatial-and-agritech",
+          label: text("Geoprocessamento e agritech", "Geospatial processing and agritech"),
+          value: text(
+            "Sensoriamento remoto, Landsat e Sentinel-2, processamento de grandes volumes de rasters, GDAL/Rasterio, índices de vegetação, estatística espacial, agricultura de precisão, mapas de aplicação em taxa variável e integração entre dados de campo e imagens de satélite.",
+            "Remote sensing, Landsat and Sentinel-2, large-scale raster processing, GDAL/Rasterio, vegetation indices, spatial statistics, precision agriculture, variable-rate application maps and integration of field data with satellite imagery.",
+          ),
+        },
+        { id: "programming", label: text("Programação", "Programming"), value: text("Python e JavaScript/TypeScript", "Python and JavaScript/TypeScript") },
         { id: "languages", label: text("Idiomas", "Languages"), value: text("Português nativo · Inglês fluente", "Native Portuguese · Fluent English") },
-        { id: "soft-skills", label: text("Competências interpessoais", "Soft Skills"), value: text("Diligente, aprendizado rápido, proativo, colaborativo, pensamento crítico", "Diligent, quick learner, proactive, collaborative, critical thinker") },
       ],
     },
   ],
@@ -680,8 +793,8 @@ export const siteContent = Object.freeze({
       },
     ],
     other: [
-      { id: "orion-professional-recognition", year: "2025", description: text("Destaque Profissional por Iniciativa Criativa e Inovadora · Orion Sistemas Agrícolas.", "Professional recognition for creative and innovative initiative · Orion Sistemas Agrícolas.") },
-      { id: "cygni-professional-recognition", year: "2016", description: text("Destaque Profissional por Iniciativa Criativa e Inovadora · CYGNI AgroCiência.", "Professional recognition for creative and innovative initiative · CYGNI AgroCiência.") },
+      { id: "orion-professional-recognition", year: "2025", description: text("Reconhecimento profissional por criatividade e inovação, Grupo Orion, pela estruturação inicial da área de P&D.", "Professional recognition for creativity and innovation, Grupo Orion, for establishing the initial R&D function.") },
+      { id: "cygni-professional-recognition", year: "2016", description: text("Destaque profissional por criatividade e inovação, CYGNI AgroScience.", "Professional recognition for creativity and innovation, CYGNI AgroScience.") },
       { id: "regional-programming-third-place", year: "2014", description: text("Terceiro colocado na fase regional de programação · Sociedade Brasileira de Computação.", "Third place in the regional programming contest · Sociedade Brasileira de Computação.") },
       { id: "univem-computing-olympiad", year: "2013", description: text("Primeiro colocado na olimpíada de informática para alunos do ensino médio promovida pelo UNIVEM.", "First place in UNIVEM’s computing olympiad for high school students.") },
     ],
