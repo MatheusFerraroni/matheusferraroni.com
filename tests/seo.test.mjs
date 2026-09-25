@@ -13,6 +13,7 @@ const expectedAlternates = new Map([
   ["x-default", `${siteOrigin}/`],
 ]);
 const expectedSameAs = [
+  "https://www.linkedin.com/in/matheusferraroni/",
   "http://lattes.cnpq.br/7066133969704063",
   "https://scholar.google.com/citations?hl=pt-BR&user=ZCrxyHUAAAAJ",
   "https://github.com/MatheusFerraroni",
@@ -29,7 +30,6 @@ const pages = [
       "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
     ogLocale: "pt_BR",
     socialCard: `${siteOrigin}/assets/image/social-card-pt-br.png`,
-    linkedinUnavailable: "LinkedIn desativado temporariamente",
     toolsLabel: "Ferramentas",
   },
   {
@@ -41,7 +41,6 @@ const pages = [
       "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
     ogLocale: "en_US",
     socialCard: `${siteOrigin}/assets/image/social-card-en.png`,
-    linkedinUnavailable: "LinkedIn temporarily unavailable",
     toolsLabel: "Tools",
   },
 ];
@@ -274,12 +273,13 @@ for (const page of pages) {
     assert.equal(twitterDescription?.attributes.get("content"), escapedDescription);
     assert.equal(twitterImage?.attributes.get("content"), page.socialCard);
     assert.equal(themeColor?.attributes.get("content"), "#020617");
-    assert.equal(linkedinLink?.attributes.get("aria-disabled"), "true");
-    assert.equal(
-      linkedinLink?.attributes.get("data-disabled-message"),
-      page.linkedinUnavailable
-    );
-    assert.equal(linkedinLink?.attributes.get("title"), page.linkedinUnavailable);
+    assert.equal(linkedinLink?.attributes.get("href"), "https://www.linkedin.com/in/matheusferraroni/");
+    assert.equal(linkedinLink?.attributes.get("target"), "_blank");
+    assert.equal(linkedinLink?.attributes.get("rel"), "noopener noreferrer");
+    assert.equal(linkedinLink?.attributes.get("data-analytics-id"), "linkedin");
+    assert.equal(linkedinLink?.attributes.get("data-analytics-group"), "professional-profile");
+    assert.ok(!linkedinLink?.attributes.has("aria-disabled"));
+    assert.ok(!linkedinLink?.attributes.has("data-disabled-message"));
     assert.equal(
       html.match(/<button\b[^>]*id="tools-button"[^>]*>([^<]+)<\/button>/)?.[1],
       page.toolsLabel

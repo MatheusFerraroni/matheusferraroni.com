@@ -75,10 +75,6 @@ export const siteContent = Object.freeze({
     close: text("Fechar", "Close"),
     email: text("E-mail", "Email"),
     contactEmailAlt: text("E-mail de contato", "Contact email address"),
-    linkedinUnavailable: text(
-      "LinkedIn desativado temporariamente",
-      "LinkedIn temporarily unavailable",
-    ),
     repository: text("Repositório", "Repository"),
     technologies: text("Tecnologias", "Technologies"),
     problem: text("Problema", "Problem"),
@@ -167,6 +163,7 @@ export const siteContent = Object.freeze({
   ],
 
   links: {
+    linkedin: "https://www.linkedin.com/in/matheusferraroni/",
     lattes: "http://lattes.cnpq.br/7066133969704063",
     scholar: "https://scholar.google.com/citations?hl=pt-BR&user=ZCrxyHUAAAAJ",
     github: "https://github.com/MatheusFerraroni",

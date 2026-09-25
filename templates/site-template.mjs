@@ -347,6 +347,7 @@ const createStructuredData = (locale, canonical) => {
           name: "Universidade Estadual de Campinas (UNICAMP)",
         },
         sameAs: [
+          siteContent.links.linkedin,
           siteContent.links.lattes,
           siteContent.links.scholar,
           siteContent.links.github,
@@ -450,7 +451,7 @@ ${renderLanguageNavigation(locale)}
           <aside class="rounded-[2rem] border border-white/10 bg-slate-950/45 p-6 backdrop-blur-md sm:p-8" aria-label="${text(siteContent.ui.quickAccess, locale)}">
             <p class="mb-4 text-xs font-medium uppercase tracking-[0.28em] text-amber-300/80">${text(siteContent.ui.quickAccess, locale)}</p>
             <div class="grid gap-3 text-sm leading-6 text-slate-200">${renderQuickLinks(locale)}
-              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="#" id="linkedin-link" aria-disabled="true" data-disabled-message="${text(siteContent.ui.linkedinUnavailable, locale)}" title="${text(siteContent.ui.linkedinUnavailable, locale)}">LinkedIn</a>
+              <a class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 transition hover:bg-white/8" href="${escapeHtml(siteContent.links.linkedin)}" id="linkedin-link"${analyticsAttributes("linkedin", "professional-profile")}${externalLinkAttributes}>LinkedIn</a>
               <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="tools-button" type="button" aria-haspopup="dialog" aria-controls="tools-modal"${analyticsAttributes("tools", "modal")}>${text(siteContent.ui.tools, locale)}</button>
               <button class="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-left transition hover:bg-white/8" id="contact-button" type="button" aria-haspopup="dialog" aria-controls="contact-modal"${analyticsAttributes("contact", "modal")}>${text(siteContent.ui.contact, locale)}</button>
             </div>

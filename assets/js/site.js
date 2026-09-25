@@ -26,7 +26,6 @@
     flow_field_change: new Set(["enabled", "page_language"]),
   });
 
-  const linkedinLink = document.getElementById("linkedin-link");
   const flowFieldToggle = document.getElementById("toggle-flow-field");
   const toolsButton = document.getElementById("tools-button");
   const toolsModal = document.getElementById("tools-modal");
@@ -642,19 +641,6 @@
       window.location.reload();
     }, 100);
   };
-
-  if (linkedinLink) {
-    linkedinLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      const disabledMessage = linkedinLink.dataset.disabledMessage;
-
-      if (disabledMessage) {
-        linkedinLink.textContent = disabledMessage;
-      }
-
-      linkedinLink.setAttribute("aria-disabled", "true");
-    });
-  }
 
   for (const modalDefinition of modalDefinitions) {
     for (const triggerDefinition of modalDefinition.triggers) {
