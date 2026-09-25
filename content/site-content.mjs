@@ -304,7 +304,7 @@ export const siteContent = Object.freeze({
         id: "fbm-python-finance-instructor",
         organization: "FBM Educação",
         role: text("Instrutor de Python e IA para Finanças (18 horas)", "Python and AI for Finance Instructor (18 hours)"),
-        period: text("Out/2025", "Oct 2025"),
+        period: text("Out/2024", "Oct 2024"),
         description: text(
           "Ministrou curso ao vivo para profissionais de finanças, combinando Python e IA generativa para capacitar não programadores a construir ferramentas e automações para suas próprias rotinas.",
           "Delivered a live course for finance professionals, combining Python and generative AI to help non-programmers build tools and automate their own workflows.",

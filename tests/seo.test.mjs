@@ -596,8 +596,8 @@ test("doctoral research, teaching, languages, and selected publications are curr
   assert.match(phd?.description["pt-BR"], /26 de outubro de 2026/);
   assert.match(phd?.description["pt-BR"], /Mitigação de Vazamento em Aprendizado Federado/);
   assert.match(fbmCourse?.role["pt-BR"], /Python e IA para Finanças \(18 horas\)/);
-  assert.equal(fbmCourse?.period["pt-BR"], "Out/2025");
-  assert.equal(fbmCourse?.period.en, "Oct 2025");
+  assert.equal(fbmCourse?.period["pt-BR"], "Out/2024");
+  assert.equal(fbmCourse?.period.en, "Oct 2024");
   assert.equal(languages?.value["pt-BR"], "Português nativo · Inglês fluente");
   assert.equal(languages?.value.en, "Native Portuguese · Fluent English");
   assert.equal(efis?.link?.url, "https://doi.org/10.1109/DCOSS52077.2021.00032");
