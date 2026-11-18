@@ -179,7 +179,7 @@ const renderAcademicWork = (education, locale) => {
   return `
               <section class="mt-4 border-t border-white/8 pt-4" aria-labelledby="education-${escapeHtml(education.id)}-degree academic-work-${escapeHtml(education.id)}-title">
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-sky-200/80" id="academic-work-${escapeHtml(education.id)}-title">${text(siteContent.ui.academicWork, locale)}</p>
-                <p class="mt-2 text-sm leading-7 text-slate-200 sm:text-base"><cite class="font-medium not-italic text-white"${languageAttribute(academicWork.titleLanguage, locale)}>${escapeHtml(academicWork.title)}</cite></p>
+                <p class="mt-2 text-sm leading-7 text-slate-200 sm:text-base"><cite class="font-medium not-italic text-white"${languageAttribute(academicWork.titleLanguage, locale)}>${text(academicWork.title, locale)}</cite></p>
                 <dl class="mt-3 grid gap-2 text-sm leading-6 text-slate-300 sm:text-base">
                   <div><dt class="inline font-semibold text-white">${text(siteContent.ui.defense, locale)}:</dt> <dd class="inline">${text(academicWork.defenseDate, locale)}</dd></div>
                   <div><dt class="inline font-semibold text-white">${text(siteContent.ui.advisor, locale)}:</dt> <dd class="inline">${escapeHtml(education.advisor)}</dd></div>

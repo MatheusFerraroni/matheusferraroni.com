@@ -84,12 +84,12 @@ const expectedMetadata = {
   "pt-BR": {
     title: "Matheus Ferraroni Sanches | CTO, P&D e Inteligência Artificial",
     description:
-      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, professor na Unimar e doutor em Ciência da Computação pela Unicamp.",
   },
   en: {
     title: "Matheus Ferraroni Sanches | CTO, R&D and Artificial Intelligence",
     description:
-      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
+      "Matheus Ferraroni Sanches is CTO and R&D Director at Grupo Orion and a professor at Unimar. He holds a PhD in Computer Science from Unicamp.",
   },
 };
 

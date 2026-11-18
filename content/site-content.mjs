@@ -15,12 +15,12 @@ export const siteContent = Object.freeze({
       "CTO | Technology and R&D Leadership | Artificial Intelligence",
     ),
     description: text(
-      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
-      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, professor na Unimar e doutor em Ciência da Computação pela Unicamp.",
+      "Matheus Ferraroni Sanches is CTO and R&D Director at Grupo Orion and a professor at Unimar. He holds a PhD in Computer Science from Unicamp.",
     ),
     summary: text(
-      "CTO e diretor de P&D do Grupo Orion, responsável pela estratégia tecnológica, portfólio de inovação, transformação digital e adoção corporativa de IA. Forma equipes multidisciplinares e lidera o desenvolvimento de produtos que integram software, hardware e engenharia, com profundidade técnica em cloud, sistemas distribuídos e modelos de linguagem. É professor na Unimar, mestre e doutorando em Ciência da Computação pela Unicamp.",
-      "CTO and R&D Director at Grupo Orion, responsible for technology strategy, the innovation portfolio, digital transformation and enterprise AI adoption. Builds multidisciplinary teams and leads product development spanning software, hardware and engineering, with technical depth in cloud, distributed systems and language models. A professor at Unimar, he holds a master's degree and is pursuing a PhD in Computer Science at Unicamp.",
+      "CTO e diretor de P&D do Grupo Orion, responsável pela estratégia tecnológica, portfólio de inovação, transformação digital e adoção corporativa de IA. Forma equipes multidisciplinares e lidera o desenvolvimento de produtos que integram software, hardware e engenharia, com profundidade técnica em cloud, sistemas distribuídos e modelos de linguagem. É professor na Unimar, mestre e doutor em Ciência da Computação pela Unicamp.",
+      "CTO and R&D Director at Grupo Orion, responsible for technology strategy, the innovation portfolio, digital transformation and enterprise AI adoption. Builds multidisciplinary teams and leads product development spanning software, hardware and engineering, with technical depth in cloud, distributed systems and language models. A professor at Unimar, he holds a PhD and a master’s degree in Computer Science from Unicamp.",
     ),
     socialCardAlt: text(
       "Matheus Ferraroni Sanches — CTO, diretor de P&D e Inteligência Artificial",
@@ -341,13 +341,44 @@ export const siteContent = Object.freeze({
     {
       id: "phd-computer-science",
       degree: text("Doutorado em Ciência da Computação", "PhD in Computer Science"),
-      period: text("2020, em andamento", "2020–present"),
+      period: text("2020 a 2026", "2020–2026"),
       institution: "Universidade Estadual de Campinas, UNICAMP",
       advisor: "Leandro Aparecido Villas",
       description: text(
-        "Pesquisa: Geração e Adaptação de Conjuntos de Dados Conversacionais para Modelos de Linguagem com Mitigação de Vazamento em Aprendizado Federado. Defesa agendada para 26 de outubro de 2026; curso em andamento.",
-        "Research: Generation and Adaptation of Conversational Datasets for Language Models with Leakage Mitigation in Federated Learning. Defense scheduled for October 26, 2026; degree in progress.",
+        "Pesquisa sobre coleta, geração e adaptação de dados em português brasileiro, seu uso no pré-treinamento continuado de modelos de linguagem e a mitigação de vazamento de informações sensíveis em aprendizado federado.",
+        "Research on collecting, generating and adapting Brazilian Portuguese data, using it for continual pretraining of language models, and mitigating sensitive information leakage in federated learning.",
       ),
+      academicWork: {
+        title: text(
+          "Métodos e Recursos de Dados para Modelos de Linguagem em Português Brasileiro: da Coleta e Adaptação à Privacidade em Aprendizado Federado",
+          "Methods and Data Resources for Brazilian Portuguese Language Models: From Data Collection and Adaptation to Privacy in Federated Learning",
+        ),
+        defenseDate: text("26 de outubro de 2026", "October 26, 2026"),
+        committee: [
+          "Leandro Aparecido Villas",
+          "Flávia Coimbra Delicato",
+          "Elvis Fusco",
+          "Washington Luiz Miranda da Cunha",
+          "Helena de Almeida Maia",
+        ],
+        documents: [
+          {
+            id: "doctoral-thesis",
+            kind: "doctoral-thesis",
+            label: text("Baixar tese", "Download doctoral thesis"),
+            path: "documents/doctoral-thesis.pdf",
+            downloadName: "matheus-ferraroni-sanches-tese-doutorado.pdf",
+          },
+          {
+            id: "doctoral-presentation",
+            kind: "presentation",
+            label: text("Baixar apresentação da defesa", "Download defense presentation"),
+            path: "documents/doctoral-presentation.pdf",
+            downloadName: "matheus-ferraroni-sanches-apresentacao-doutorado.pdf",
+          },
+        ],
+        records: [],
+      },
     },
     {
       id: "msc-computer-science",

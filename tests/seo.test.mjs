@@ -27,7 +27,7 @@ const pages = [
     canonical: `${siteOrigin}/`,
     title: "Matheus Ferraroni Sanches | CTO, P&D e Inteligência Artificial",
     description:
-      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, com atuação em estratégia tecnológica, novos produtos, IA corporativa, cloud e agritech.",
+      "Matheus Ferraroni Sanches é CTO e diretor de P&D do Grupo Orion, professor na Unimar e doutor em Ciência da Computação pela Unicamp.",
     ogLocale: "pt_BR",
     socialCard: `${siteOrigin}/assets/image/social-card-pt-br.png`,
     toolsLabel: "Ferramentas",
@@ -38,7 +38,7 @@ const pages = [
     canonical: `${siteOrigin}/en/`,
     title: "Matheus Ferraroni Sanches | CTO, R&D and Artificial Intelligence",
     description:
-      "Matheus Ferraroni Sanches is a CTO and R&D Director at Grupo Orion, working in technology strategy, new products, enterprise AI, cloud and agritech.",
+      "Matheus Ferraroni Sanches is CTO and R&D Director at Grupo Orion and a professor at Unimar. He holds a PhD in Computer Science from Unicamp.",
     ogLocale: "en_US",
     socialCard: `${siteOrigin}/assets/image/social-card-en.png`,
     toolsLabel: "Tools",
@@ -79,6 +79,37 @@ const analyticsEvents = [
   "flow_field_change",
 ];
 const academicWorks = [
+  {
+    educationId: "phd-computer-science",
+    title: {
+      "pt-BR": "Métodos e Recursos de Dados para Modelos de Linguagem em Português Brasileiro: da Coleta e Adaptação à Privacidade em Aprendizado Federado",
+      en: "Methods and Data Resources for Brazilian Portuguese Language Models: From Data Collection and Adaptation to Privacy in Federated Learning",
+    },
+    advisor: "Leandro Aparecido Villas",
+    committee: [
+      "Leandro Aparecido Villas",
+      "Flávia Coimbra Delicato",
+      "Elvis Fusco",
+      "Washington Luiz Miranda da Cunha",
+      "Helena de Almeida Maia",
+    ],
+    defenseDate: { "pt-BR": "26 de outubro de 2026", en: "October 26, 2026" },
+    documents: [
+      {
+        id: "doctoral-thesis",
+        kind: "doctoral-thesis",
+        path: "documents/doctoral-thesis.pdf",
+        downloadName: "matheus-ferraroni-sanches-tese-doutorado.pdf",
+      },
+      {
+        id: "doctoral-presentation",
+        kind: "presentation",
+        path: "documents/doctoral-presentation.pdf",
+        downloadName: "matheus-ferraroni-sanches-apresentacao-doutorado.pdf",
+      },
+    ],
+    records: [],
+  },
   {
     educationId: "msc-computer-science",
     title: "Alocação de RoadSide Units Ciente de Obstáculos e Diferentes Modelos de Propagação de Sinal",
@@ -401,7 +432,7 @@ test("completed education cards expose academic metadata, downloads, and records
     );
 
     assert.ok(education?.academicWork, `${expectedWork.educationId} needs academic work data`);
-    assert.equal(education.academicWork.title, expectedWork.title);
+    assert.deepEqual(education.academicWork.title, expectedWork.title);
     assert.equal(education.advisor, expectedWork.advisor);
     assert.deepEqual(education.academicWork.committee, expectedWork.committee);
     assert.ok(!Object.hasOwn(education, "workTitle"), "Legacy workTitle must not remain");
@@ -422,8 +453,10 @@ test("completed education cards expose academic metadata, downloads, and records
       )?.[0];
 
       assert.ok(section, `${page.path} needs the ${expectedWork.educationId} work section`);
-      assert.ok(section.includes(expectedWork.title));
-      if (page.locale === "en") {
+      const isOriginalTitle = typeof expectedWork.title === "string";
+      const title = isOriginalTitle ? expectedWork.title : expectedWork.title[page.locale];
+      assert.ok(section.includes(title));
+      if (isOriginalTitle && page.locale === "en") {
         assert.ok(section.includes('lang="pt-BR"'), "Original titles must retain their language");
       }
       assert.ok(section.includes(expectedWork.defenseDate[page.locale]));
@@ -443,7 +476,7 @@ test("completed education cards expose academic metadata, downloads, and records
       }
 
       for (const document of expectedWork.documents) {
-        const link = findTagById(html, `academic-document-${document.id}`);
+        const link = findTagById(section, `academic-document-${document.id}`);
         assert.equal(link?.name, "a");
         assert.equal(link?.attributes.get("href"), `${assetBase}/${document.path}`);
         assert.equal(link?.attributes.get("download"), document.downloadName);
@@ -592,9 +625,7 @@ test("doctoral research, teaching, languages, and selected publications are curr
     (publication) => publication.id === "maximum-coverage-medical-emergency"
   );
 
-  assert.equal(phd?.period["pt-BR"], "2020, em andamento");
-  assert.match(phd?.description["pt-BR"], /26 de outubro de 2026/);
-  assert.match(phd?.description["pt-BR"], /Mitigação de Vazamento em Aprendizado Federado/);
+  assert.deepEqual(phd?.period, { "pt-BR": "2020 a 2026", en: "2020–2026" });
   assert.match(fbmCourse?.role["pt-BR"], /Python e IA para Finanças \(18 horas\)/);
   assert.equal(fbmCourse?.period["pt-BR"], "Out/2024");
   assert.equal(fbmCourse?.period.en, "Oct 2024");
@@ -608,6 +639,11 @@ test("doctoral research, teaching, languages, and selected publications are curr
   for (const page of pages) {
     const html = readRepositoryFile(page.path);
     assert.ok(html.includes(phd.description[page.locale]));
+    assert.ok(textFromElementById(html, "education-phd-computer-science")
+      .includes(phd.period[page.locale]));
+    assert.match(html, page.locale === "pt-BR"
+      ? /mestre e doutor em Ciência da Computação pela Unicamp/
+      : /holds a PhD and a master’s degree in Computer Science from Unicamp/);
     assert.ok(html.includes(fbmCourse.role[page.locale]));
     assert.ok(textFromElementById(html, "experience-fbm-python-finance-instructor")
       .includes(fbmCourse.period[page.locale]));

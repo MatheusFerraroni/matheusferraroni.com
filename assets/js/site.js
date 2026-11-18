@@ -14,6 +14,7 @@
   ]);
   const documentKinds = new Set([
     "dissertation",
+    "doctoral-thesis",
     "presentation",
     "undergraduate-thesis",
   ]);
