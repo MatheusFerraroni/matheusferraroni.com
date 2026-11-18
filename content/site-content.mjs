@@ -240,9 +240,36 @@ export const siteContent = Object.freeze({
         ),
         period: text("Jan/2025, atual", "Jan 2025–present"),
         description: text(
-          "Docência nos cursos de Ciência da Computação, Inteligência Artificial e Sistemas de Informação, com disciplinas de IA, aprendizado de máquina, algoritmos e estruturas de dados. Orienta dois projetos de iniciação científica.",
-          "Teaches in Computer Science, Artificial Intelligence and Information Systems programs, covering AI, machine learning, algorithms and data structures. Supervises two undergraduate research projects.",
+          "Docência nos cursos de Ciência da Computação, Inteligência Artificial e Sistemas de Informação, com disciplinas de IA, aprendizado de máquina, algoritmos e estruturas de dados.",
+          "Teaches in Computer Science, Artificial Intelligence and Information Systems programs, covering AI, machine learning, algorithms and data structures.",
         ),
+        researchSupervision: {
+          heading: text("Orientação de iniciação científica", "Undergraduate research supervision"),
+          description: text(
+            "Orientou dois trabalhos da UNIMAR no 26º CONIC-Semesp (2026), com um trabalho premiado na categoria Em andamento, na área de Ciências Exatas, da Terra e Agrárias. Ambos são da subárea de Tecnologia da Informação.",
+            "Supervised two UNIMAR research projects at the 26th CONIC-Semesp (2026), with one receiving an award in the In Progress category of Exact, Earth and Agricultural Sciences. Both projects were in the Information Technology subfield.",
+          ),
+          works: [
+            {
+              placement: text("1º lugar", "1st place"),
+              author: "Rafaela Tavares Návia",
+              title: text(
+                "Sistema de roteamento inteligente e otimização operacional em tempo real para atendimento às medidas protetivas de urgência",
+                "Intelligent routing and real-time operational optimization system for responding to emergency protective measures",
+              ),
+            },
+            {
+              placement: text("4º lugar", "4th place"),
+              author: "Larah Cezário Lima da Silva",
+              title: text(
+                "Sistema de predição espaço-temporal e identificação de regiões de risco para apoio às medidas protetivas de urgência",
+                "Spatiotemporal prediction and risk-area identification system to support emergency protective measures",
+              ),
+            },
+          ],
+          rankingUrl: "https://www.semesp.org.br/conic/resultados/?edicao=2026",
+          rankingLabel: text("Ver ranking oficial", "View official ranking"),
+        },
       },
       {
         id: "cygni-cto",

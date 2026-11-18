@@ -90,6 +90,27 @@ const renderToolLinks = () =>
     )
     .join("");
 
+const renderResearchSupervision = (supervision, locale) => {
+  if (!supervision) {
+    return "";
+  }
+
+  return `
+              <section class="mt-4 border-t border-white/8 pt-4">
+                <h4 class="font-semibold text-white">${text(supervision.heading, locale)}</h4>
+                <p class="mt-2 text-sm leading-7 text-slate-300 sm:text-base">${text(supervision.description, locale)}</p>
+                <ul class="mt-3 list-disc space-y-2 pl-5 text-sm leading-7 text-slate-300 sm:text-base">${supervision.works.map((work) => `
+                  <li>
+                    <strong class="font-semibold text-white">${text(work.placement, locale)} — ${escapeHtml(work.author)}</strong>
+                    <cite class="block">${text(work.title, locale)}</cite>
+                  </li>`).join("")}
+                </ul>
+                <p class="mt-3 text-sm">
+                  <a class="text-sky-200 underline underline-offset-4 hover:text-white" href="${escapeHtml(supervision.rankingUrl)}"${externalLinkAttributes}>${text(supervision.rankingLabel, locale)}</a>
+                </p>
+              </section>`;
+};
+
 const renderCurrentExperience = (locale) =>
   siteContent.experience.current
     .map(
@@ -108,7 +129,7 @@ const renderCurrentExperience = (locale) =>
                 .join("")}
               </ul>`
                   : ""
-              }
+              }${renderResearchSupervision(experience.researchSupervision, locale)}
             </div>`,
     )
     .join("");
