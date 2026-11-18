@@ -344,10 +344,6 @@ export const siteContent = Object.freeze({
       period: text("2020 a 2026", "2020–2026"),
       institution: "Universidade Estadual de Campinas, UNICAMP",
       advisor: "Leandro Aparecido Villas",
-      description: text(
-        "Pesquisa sobre coleta, geração e adaptação de dados em português brasileiro, seu uso no pré-treinamento continuado de modelos de linguagem e a mitigação de vazamento de informações sensíveis em aprendizado federado.",
-        "Research on collecting, generating and adapting Brazilian Portuguese data, using it for continual pretraining of language models, and mitigating sensitive information leakage in federated learning.",
-      ),
       academicWork: {
         title: text(
           "Métodos e Recursos de Dados para Modelos de Linguagem em Português Brasileiro: da Coleta e Adaptação à Privacidade em Aprendizado Federado",

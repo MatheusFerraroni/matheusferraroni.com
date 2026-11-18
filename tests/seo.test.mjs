@@ -638,7 +638,6 @@ test("doctoral research, teaching, languages, and selected publications are curr
 
   for (const page of pages) {
     const html = readRepositoryFile(page.path);
-    assert.ok(html.includes(phd.description[page.locale]));
     assert.ok(textFromElementById(html, "education-phd-computer-science")
       .includes(phd.period[page.locale]));
     assert.match(html, page.locale === "pt-BR"
